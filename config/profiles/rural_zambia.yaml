@@ -1,0 +1,17 @@
+# Rural Zambia Network Profile
+# Source: GSMA Mobile Economy Sub-Saharan Africa 2023
+# Represents rural Zambian mobile conditions (outside major cities)
+
+profile:
+  name: "rural_zambia"
+  description: "Rural Zambian mobile network conditions"
+  source: "GSMA Mobile Economy Sub-Saharan Africa 2023"
+
+network:
+  latency_min_ms: 300
+  latency_max_ms: 800
+  latency_distribution: "gaussian"
+  bandwidth_mbps: 1.2
+  packet_loss_rate: 0.07        # 7%
+  dropout_probability: 0.15     # 15% chance per round
+  dropout_duration_rounds: 2

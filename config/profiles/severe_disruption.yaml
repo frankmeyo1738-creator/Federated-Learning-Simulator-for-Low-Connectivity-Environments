@@ -1,0 +1,17 @@
+# Severe Disruption Profile
+# Source: GSMA Mobile Economy Sub-Saharan Africa 2023
+# Represents load shedding / infrastructure failure conditions
+
+profile:
+  name: "severe_disruption"
+  description: "Severe connectivity disruption — load shedding / infrastructure failure"
+  source: "GSMA Mobile Economy Sub-Saharan Africa 2023"
+
+network:
+  latency_min_ms: 800
+  latency_max_ms: 2000
+  latency_distribution: "gaussian"
+  bandwidth_mbps: 0.3
+  packet_loss_rate: 0.20        # 20%
+  dropout_probability: 0.35     # 35% chance per round
+  dropout_duration_rounds: 3

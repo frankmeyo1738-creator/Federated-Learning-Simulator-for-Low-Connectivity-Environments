@@ -1,0 +1,17 @@
+# Urban Zambia Network Profile
+# Source: GSMA Mobile Economy Sub-Saharan Africa 2023
+# Represents urban Lusaka/Copperbelt mobile conditions
+
+profile:
+  name: "urban_zambia"
+  description: "Urban Zambian mobile network conditions (Lusaka/Copperbelt)"
+  source: "GSMA Mobile Economy Sub-Saharan Africa 2023"
+
+network:
+  latency_min_ms: 80
+  latency_max_ms: 200
+  latency_distribution: "gaussian"
+  bandwidth_mbps: 8.5
+  packet_loss_rate: 0.01        # 1%
+  dropout_probability: 0.05     # 5% chance per round
+  dropout_duration_rounds: 1

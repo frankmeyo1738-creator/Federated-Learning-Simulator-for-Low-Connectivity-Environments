@@ -1,0 +1,16 @@
+# Baseline Profile — Ideal conditions
+# For comparison against impaired profiles in experiments
+
+profile:
+  name: "baseline"
+  description: "Ideal network conditions — control for experiments"
+  source: "Synthetic baseline"
+
+network:
+  latency_min_ms: 1
+  latency_max_ms: 5
+  latency_distribution: "gaussian"
+  bandwidth_mbps: 100.0
+  packet_loss_rate: 0.0
+  dropout_probability: 0.0
+  dropout_duration_rounds: 0
