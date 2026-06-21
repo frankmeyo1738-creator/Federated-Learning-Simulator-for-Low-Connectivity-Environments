@@ -1,0 +1,28 @@
+# Rural Zambia FedAvg — High Network Impairment
+# Simulates rural Sub-Saharan African connectivity: high latency (300–800ms),
+# limited bandwidth (1.2 Mbps), noticeable packet loss (7%), and frequent
+# client dropouts (15% per round, lasting 2 rounds each).
+# Tests how FedAvg degrades under challenging rural conditions.
+# Run with: python -m src.main --config config/experiments/rural_zambia_fedavg.yaml --iid
+
+experiment_name: "rural_zambia_fedavg"
+num_clients: 10
+num_rounds: 20
+fraction_fit: 0.5
+algorithm: "fedavg"
+mu: 0.0
+dataset: "mnist"
+local_epochs: 2
+batch_size: 32
+learning_rate: 0.01
+seed: 42
+output_dir: "experiments/results"
+
+network_profile:
+  name: "rural_zambia"
+  latency_min_ms: 300
+  latency_max_ms: 800
+  bandwidth_mbps: 1.2
+  packet_loss_rate: 0.07
+  dropout_probability: 0.15
+  dropout_duration_rounds: 2

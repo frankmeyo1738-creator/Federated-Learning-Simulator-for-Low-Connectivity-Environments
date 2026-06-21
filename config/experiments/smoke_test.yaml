@@ -1,0 +1,25 @@
+# Smoke Test Configuration
+# Quick 3-round, 5-client test to verify end-to-end pipeline
+# Run with: python -m src.main --config config/experiments/smoke_test.yaml --iid
+
+experiment_name: "smoke_test_mnist"
+num_clients: 5
+num_rounds: 3
+fraction_fit: 1.0             # All clients participate every round
+algorithm: "fedavg"
+mu: 0.0
+dataset: "mnist"
+local_epochs: 1
+batch_size: 32
+learning_rate: 0.01
+seed: 42
+output_dir: "experiments/results"
+
+network_profile:
+  name: "baseline"
+  latency_min_ms: 1
+  latency_max_ms: 5
+  bandwidth_mbps: 100.0
+  packet_loss_rate: 0.0
+  dropout_probability: 0.0
+  dropout_duration_rounds: 0

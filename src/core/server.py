@@ -40,6 +40,9 @@ class FLServer:
         The global model architecture (uninitialised weights are fine).
     clients : List[FLClient]
         Pre-initialised FL clients with their data partitions.
+    test_loader : Optional[torch.utils.data.DataLoader]
+        DataLoader for the held-out test set used for global evaluation.
+        If ``None``, evaluation returns ``(0.0, 0.0)`` placeholders.
     """
 
     def __init__(
@@ -47,10 +50,12 @@ class FLServer:
         config: ExperimentConfig,
         model: nn.Module,
         clients: List[FLClient],
+        test_loader=None,
     ) -> None:
         self.config = config
         self.global_model = model
         self.clients = clients
+        self.test_loader = test_loader
 
         # Initialise adjacent-layer components
         self.impairment_engine = NetworkImpairmentEngine(config.network_profile)
@@ -88,7 +93,7 @@ class FLServer:
             logger.info("Selected %d clients: %s", len(selected_ids), selected_ids)
 
             # 2. Train selected clients and collect updates via impairment layer
-            updates, dropped = asyncio.get_event_loop().run_until_complete(
+            updates, dropped = asyncio.run(
                 self._collect_updates(selected_ids, round_num)
             )
 
@@ -239,14 +244,40 @@ class FLServer:
         return transmitted
 
     def _evaluate_global_model(self) -> tuple[float, float]:
-        """Evaluate the global model on a test set.
+        """Evaluate the global model on the held-out test set.
+
+        Moves the model to CPU, runs inference with ``torch.no_grad()``,
+        and computes cross-entropy loss and top-1 accuracy.
 
         Returns
         -------
         tuple[float, float]
-            (accuracy, loss) — currently returns placeholders.
-
-        TODO: Implement proper evaluation with a held-out test set.
+            ``(accuracy, loss)`` on the test set. Returns ``(0.0, 0.0)``
+            if no test loader was provided.
         """
-        # Placeholder — will be implemented when data loading is connected
-        return 0.0, 0.0
+        if self.test_loader is None:
+            return 0.0, 0.0
+
+        device = torch.device("cpu")
+        model = self.global_model.to(device)
+        model.eval()
+
+        criterion = nn.CrossEntropyLoss()
+        total_loss = 0.0
+        correct = 0
+        total = 0
+
+        with torch.no_grad():
+            for data, target in self.test_loader:
+                data, target = data.to(device), target.to(device)
+                output = model(data)
+                loss = criterion(output, target)
+                total_loss += loss.item() * data.size(0)
+                _, predicted = output.max(1)
+                correct += predicted.eq(target).sum().item()
+                total += data.size(0)
+
+        accuracy = correct / max(total, 1)
+        avg_loss = total_loss / max(total, 1)
+
+        return accuracy, avg_loss
