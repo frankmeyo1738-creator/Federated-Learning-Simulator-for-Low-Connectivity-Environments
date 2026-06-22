@@ -4,7 +4,7 @@ A Python-based FL network simulation framework for testing federated
 learning algorithms under realistic Sub-Saharan African network conditions.
 
 ## Project Status
-🚧 Under active development — Final Year Project, UNZA CS 2026
+✅ Core Development & Experiments Complete — Final Year Project, UNZA CS 2026
 
 ## Supervisor
 Mr. Mofya Phiri, Department of Computing and Informatics, UNZA
@@ -32,19 +32,31 @@ The simulator is built with a clean 4-layer architecture:
 
 ## Milestones
 - [x] Proposal submitted
-- [ ] Core simulator (Week 5-8)
-- [ ] Network impairment engine (Week 9-10)
-- [ ] Experiments (Week 12-13)
+- [x] Core simulator 
+- [x] Network impairment engine 
+- [x] Experiments
 - [ ] Final submission: September 29, 2026
+
+## Results
+Experiment metrics, CSV outputs, and comparison plots are generated and saved to the `experiments/results/` directory. Four key comparisons are plotted automatically via `scripts/generate_comparison_plots.py`:
+- Network Comparison Accuracy
+- FedAvg vs FedProx robustness
+- Client Dropout Impact
+- Communication Costs
 
 ## Quick Start
 
 ```bash
-# Install dependencies
+# Setup Virtual Environment and Install dependencies
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 
-# Run an experiment
-python -m src.main --config config/experiments/example_experiment.yaml
+# Run all baseline (IID) experiments sequentially
+./run_all_experiments.sh
+
+# Run all non-IID experiments sequentially
+./scripts/run_noniid_experiments.sh
 ```
 
 ## License

@@ -1,0 +1,30 @@
+# Non-IID variant — Dirichlet alpha=0.5
+# Rural Zambia FedProx — FedProx Under High Network Impairment
+# Same rural Zambia network conditions as rural_zambia_fedavg.yaml, but
+# uses FedProx (μ=0.01) instead of FedAvg. The proximal term helps
+# stabilise convergence when client updates are stale or missing due to
+# network dropouts. Direct comparison with rural_zambia_fedavg reveals
+# FedProx's advantage in high-impairment environments.
+# Run with: python -m src.main --config config/experiments/rural_zambia_fedprox_noniid.yaml
+
+experiment_name: "rural_zambia_fedprox_noniid"
+num_clients: 10
+num_rounds: 20
+fraction_fit: 0.5
+algorithm: "fedprox"
+mu: 0.01
+dataset: "mnist"
+local_epochs: 2
+batch_size: 32
+learning_rate: 0.01
+seed: 42
+output_dir: "experiments/results"
+
+network_profile:
+  name: "rural_zambia"
+  latency_min_ms: 300
+  latency_max_ms: 800
+  bandwidth_mbps: 1.2
+  packet_loss_rate: 0.07
+  dropout_probability: 0.15
+  dropout_duration_rounds: 2
