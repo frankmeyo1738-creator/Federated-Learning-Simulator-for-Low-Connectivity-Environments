@@ -246,8 +246,8 @@ class FLServer:
     def _evaluate_global_model(self) -> tuple[float, float]:
         """Evaluate the global model on the held-out test set.
 
-        Moves the model to CPU, runs inference with ``torch.no_grad()``,
-        and computes cross-entropy loss and top-1 accuracy.
+        Moves the model to the available device, runs inference with
+        ``torch.no_grad()``, and computes cross-entropy loss and top-1 accuracy.
 
         Returns
         -------
@@ -258,7 +258,7 @@ class FLServer:
         if self.test_loader is None:
             return 0.0, 0.0
 
-        device = torch.device("cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model = self.global_model.to(device)
         model.eval()
 
@@ -268,14 +268,14 @@ class FLServer:
         total = 0
 
         with torch.no_grad():
-            for data, target in self.test_loader:
-                data, target = data.to(device), target.to(device)
-                output = model(data)
-                loss = criterion(output, target)
-                total_loss += loss.item() * data.size(0)
+            for inputs, labels in self.test_loader:
+                inputs, labels = inputs.to(device), labels.to(device)
+                output = model(inputs)
+                loss = criterion(output, labels)
+                total_loss += loss.item() * inputs.size(0)
                 _, predicted = output.max(1)
-                correct += predicted.eq(target).sum().item()
-                total += data.size(0)
+                correct += predicted.eq(labels).sum().item()
+                total += inputs.size(0)
 
         accuracy = correct / max(total, 1)
         avg_loss = total_loss / max(total, 1)

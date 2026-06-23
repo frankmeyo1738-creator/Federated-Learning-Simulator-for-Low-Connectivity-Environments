@@ -81,11 +81,12 @@ class FLClient:
         ModelUpdate
             Contains updated weights, sample count, loss, and metadata.
         """
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         start_time = time.time()
 
         # Deep-copy global model so we don't mutate the server's copy
-        local_model = copy.deepcopy(global_model).to(self.device)
-        local_model.train()
+        model = copy.deepcopy(global_model).to(device)
+        model.train()
 
         # Prepare data loader
         loader = DataLoader(
@@ -95,7 +96,7 @@ class FLClient:
         )
 
         optimizer = optim.SGD(
-            local_model.parameters(),
+            model.parameters(),
             lr=self.config.learning_rate,
         )
         criterion = nn.CrossEntropyLoss()
@@ -110,18 +111,18 @@ class FLClient:
         num_batches = 0
 
         for _epoch in range(self.config.local_epochs):
-            for data, target in loader:
-                data, target = data.to(self.device), target.to(self.device)
+            for inputs, labels in loader:
+                inputs, labels = inputs.to(device), labels.to(device)
 
                 optimizer.zero_grad()
-                output = local_model(data)
-                loss = criterion(output, target)
+                output = model(inputs)
+                loss = criterion(output, labels)
 
                 # FedProx: add proximal term  μ/2 · ||w - w_global||²
                 if self.config.algorithm == "fedprox" and self.config.mu > 0:
                     proximal_term = 0.0
-                    for name, param in local_model.named_parameters():
-                        proximal_term += ((param - global_weights[name]) ** 2).sum()
+                    for name, param in model.named_parameters():
+                        proximal_term += ((param - global_weights[name].to(device)) ** 2).sum()
                     loss += (self.config.mu / 2.0) * proximal_term
 
                 loss.backward()
@@ -136,15 +137,14 @@ class FLClient:
         # Calculate model size in bytes
         model_size = sum(
             p.nelement() * p.element_size()
-            for p in local_model.parameters()
+            for p in model.parameters()
         )
+
+        cpu_weights = {k: v.cpu() for k, v in model.state_dict().items()}
 
         return ModelUpdate(
             client_id=self.client_id,
-            weights={
-                name: param.cpu().clone().detach()
-                for name, param in local_model.state_dict().items()
-            },
+            weights=cpu_weights,
             num_samples=len(self.dataset_partition),
             loss=avg_loss,
             round_num=round_num,
