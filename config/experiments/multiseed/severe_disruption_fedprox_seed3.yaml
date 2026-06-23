@@ -1,0 +1,20 @@
+experiment_name: severe_disruption_fedprox_seed3
+num_clients: 10
+num_rounds: 20
+fraction_fit: 0.5
+algorithm: fedprox
+mu: 0.01
+dataset: mnist
+local_epochs: 2
+batch_size: 32
+learning_rate: 0.01
+seed: 3
+output_dir: experiments/results/multiseed
+network_profile:
+  name: severe_disruption
+  latency_min_ms: 800
+  latency_max_ms: 2000
+  bandwidth_mbps: 0.3
+  packet_loss_rate: 0.2
+  dropout_probability: 0.35
+  dropout_duration_rounds: 3

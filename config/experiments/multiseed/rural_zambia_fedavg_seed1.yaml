@@ -1,0 +1,20 @@
+experiment_name: rural_zambia_fedavg_seed1
+num_clients: 10
+num_rounds: 20
+fraction_fit: 0.5
+algorithm: fedavg
+mu: 0.0
+dataset: mnist
+local_epochs: 2
+batch_size: 32
+learning_rate: 0.01
+seed: 1
+output_dir: experiments/results/multiseed
+network_profile:
+  name: rural_zambia
+  latency_min_ms: 300
+  latency_max_ms: 800
+  bandwidth_mbps: 1.2
+  packet_loss_rate: 0.07
+  dropout_probability: 0.15
+  dropout_duration_rounds: 2
