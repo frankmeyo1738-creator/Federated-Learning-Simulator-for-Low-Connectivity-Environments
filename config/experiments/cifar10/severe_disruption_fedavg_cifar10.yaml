@@ -1,0 +1,28 @@
+# Severe Disruption FedAvg — CIFAR-10 Extreme Network Impairment
+# Simulates near-failure connectivity: very high latency (800–2000ms),
+# near-unusable bandwidth (0.3 Mbps), heavy packet loss (20%), and
+# aggressive client dropouts (35% per round, lasting 3 rounds each).
+# Stress-tests FedAvg on CIFAR-10 to find its breaking point under extreme conditions.
+# Run with: python -m src.main --config config/experiments/cifar10/severe_disruption_fedavg_cifar10.yaml --iid
+
+experiment_name: "severe_disruption_fedavg_cifar10"
+num_clients: 10
+num_rounds: 15
+fraction_fit: 0.5
+algorithm: "fedavg"
+mu: 0.0
+dataset: "cifar10"
+local_epochs: 2
+batch_size: 32
+learning_rate: 0.01
+seed: 42
+output_dir: "experiments/results/cifar10"
+
+network_profile:
+  name: "severe_disruption"
+  latency_min_ms: 800
+  latency_max_ms: 2000
+  bandwidth_mbps: 0.3
+  packet_loss_rate: 0.20
+  dropout_probability: 0.35
+  dropout_duration_rounds: 3
