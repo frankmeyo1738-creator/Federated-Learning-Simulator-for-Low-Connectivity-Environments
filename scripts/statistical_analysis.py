@@ -1,7 +1,7 @@
 """
 Statistical Analysis of Multi-Seed Experiments
 ==============================================
-Aggregates metrics across 5 seeds for 6 experiments and performs
+Aggregates metrics across 6 seeds for 6 experiments and performs
 Wilcoxon signed-rank tests with Cohen's d effect size for 
 FedAvg vs FedProx comparisons.
 
@@ -41,7 +41,7 @@ def analyze_experiment(exp_name):
     drop_rates = []
     total_bytes = []
     
-    for seed in range(1, 6):
+    for seed in range(1, 7):
         csv_path = os.path.join(RESULTS_DIR, f"{exp_name}_seed{seed}_metrics.csv")
         if not os.path.exists(csv_path):
             continue
@@ -125,7 +125,7 @@ def main():
         acc2 = results[exp2]["final_accs"]
         
         output.append(f"Comparison: {label} (FedAvg vs FedProx)")
-        if len(acc1) == 5 and len(acc2) == 5:
+        if len(acc1) >= 5 and len(acc2) >= 5 and len(acc1) == len(acc2):
             try:
                 # Wilcoxon signed-rank test
                 # zero_method='zsplit' handles cases where differences are exactly 0
@@ -144,7 +144,7 @@ def main():
             except ValueError as e:
                 output.append(f"  -> Could not compute test: {e}")
         else:
-            output.append("  -> Could not compute test: Missing samples (need exactly 5 pairs of results).")
+            output.append("  -> Could not compute test: Missing samples (need at least 5 pairs of results).")
             output.append(f"     Found {len(acc1)} for FedAvg, {len(acc2)} for FedProx.")
         output.append("")
         

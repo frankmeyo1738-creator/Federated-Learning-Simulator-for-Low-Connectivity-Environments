@@ -19,7 +19,11 @@ Project: FL Network Simulator — UNZA CS Final Year Project 2026
 
 import argparse
 import logging
+import random
 import sys
+
+import numpy as np
+import torch
 
 from src.config import ConfigLoader
 from src.core.client import FLClient
@@ -77,6 +81,13 @@ def main() -> None:
             config.algorithm, config.dataset, config.num_clients, config.num_rounds,
         )
         logger.info("Network profile: %s", config.network_profile.name)
+
+        # ── Reproducibility: seed all RNGs before any stochastic operation ─
+        if config.seed is not None:
+            random.seed(config.seed)
+            np.random.seed(config.seed)
+            torch.manual_seed(config.seed)
+            logger.info("RNG seeded: random, numpy, torch — seed=%d", config.seed)
 
         # ── Model architecture ─────────────────────────────────────────
         logger.info("Initialising model for dataset: %s", config.dataset)

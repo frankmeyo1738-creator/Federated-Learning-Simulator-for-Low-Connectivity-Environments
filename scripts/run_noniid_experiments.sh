@@ -8,6 +8,7 @@ source .venv/bin/activate
 # List of experiment configs to run
 EXPERIMENTS=(
     "baseline_fedavg_noniid.yaml"
+    "rural_zambia_fedavg_noniid.yaml"
     "severe_disruption_fedavg_noniid.yaml"
     "severe_disruption_fedprox_noniid.yaml"
     "rural_zambia_fedprox_noniid.yaml"

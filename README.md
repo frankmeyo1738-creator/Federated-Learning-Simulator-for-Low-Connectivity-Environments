@@ -52,28 +52,34 @@ pip install -r requirements.txt
 # Run a smoke test
 python -m src.main --config config/experiments/smoke_test.yaml --iid
 
-# Run full experiment suite
+# Run standard benchmark suite (6 core experiments)
 bash scripts/run_all_experiments.sh
+
+# Run multi-seed statistical suite (34 runs)
+bash scripts/run_multiseed_experiments.sh
+
+# Run non-IID Dirichlet suite (5 experiments)
+bash scripts/run_noniid_experiments.sh
 ```
 
 ---
 
 ## Experiment Results
 
-### MNIST — Multi-Seed (5 seeds × 6 experiments = 30 runs)
+### MNIST — Multi-Seed (baseline/urban: n=5 seeds; rural/severe: n=6 seeds — 34 runs total)
 
 | Experiment | Final Accuracy | Std | Drop Rate |
 |------------|---------------|-----|-----------|
 | Baseline FedAvg | 98.54% | ±0.07% | 0.00% |
 | Urban Zambia FedAvg | 98.50% | ±0.13% | 6.20% |
-| Rural Zambia FedAvg | 98.41% | ±0.05% | 27.60% |
-| Rural Zambia FedProx | 98.45% | ±0.14% | 27.60% |
-| Severe Disruption FedAvg | 98.20% | ±0.20% | 60.40% |
-| Severe Disruption FedProx | 98.28% | ±0.08% | 60.40% |
+| Rural Zambia FedAvg | 98.41% | ±0.05% | 29.83% |
+| Rural Zambia FedProx | 98.45% | ±0.12% | 29.83% |
+| Severe Disruption FedAvg | 98.24% | ±0.20% | 60.67% |
+| Severe Disruption FedProx | 98.29% | ±0.08% | 60.67% |
 
-**Statistical tests (Wilcoxon signed-rank, n=5):**
-- Rural Zambia: FedProx vs FedAvg — p=0.8125, Cohen's d=0.24 (no significant difference)
-- Severe Disruption: FedProx vs FedAvg — p=0.4375, Cohen's d=0.50 (medium effect, not significant)
+**Statistical tests (Wilcoxon signed-rank, n=6):**
+- Rural Zambia: FedProx vs FedAvg — p=0.5625, Cohen's d=0.27 (small effect, not significant)
+- Severe Disruption: FedProx vs FedAvg — p=0.6875, Cohen's d=0.31 (small effect, not significant)
 
 ### CIFAR-10 — Single Seed (seed 42)
 
@@ -88,13 +94,15 @@ bash scripts/run_all_experiments.sh
 
 ## Key Findings
 
-1. **Network impairment primarily affects participation and communication cost, not accuracy.** Under MNIST, severe disruption (60% dropout) reduced accuracy by only 0.34% while cutting communication volume by 64%.
+1. **Network impairment primarily affects participation and communication cost, not accuracy.** Under MNIST, severe disruption (60.67% effective dropout) reduced accuracy by only 0.30% (98.54% → 98.24%) while cutting communication volume by ~61% (457.7 MB → 180.0 MB).*
 
 2. **CIFAR-10 reveals clearer degradation.** On a harder dataset, severe disruption produced a 3.78% accuracy drop, demonstrating that impairment effects are dataset-dependent.
 
-3. **FedProx shows modest robustness gains under severe disruption.** FedProx outperformed FedAvg by 0.88% on CIFAR-10 and 0.08% on MNIST under severe conditions, though MNIST differences were not statistically significant (p=0.44).
+3. **FedProx shows modest robustness gains under severe disruption.** FedProx outperformed FedAvg by 0.88% on CIFAR-10 under severe disruption. On MNIST, FedProx leads by 0.05% on average (98.29% vs 98.24%, p=0.6875, Cohen's d=0.31, small effect, not significant). Notably, on seed 6, FedAvg slightly outperformed FedProx (98.44% vs 98.34%), illustrating sample variability and the absence of a reliable algorithmic advantage on this task.
 
-4. **Communication cost scales directly with dropout rate.** Severe disruption transmitted 64% less data than baseline, with important implications for bandwidth-constrained deployments.
+4. **Communication cost scales directly with dropout rate.** Severe disruption transmitted ~61% less data than baseline (180.0 MB vs. 457.7 MB), with important implications for bandwidth-constrained deployments.
+
+*\*Note on sample sizes: Baseline FedAvg metrics are averaged across $n=5$ seeds, while Severe Disruption FedAvg metrics are averaged across the expanded $n=6$ seed cohort.*
 
 ---
 
@@ -113,7 +121,7 @@ bash scripts/run_all_experiments.sh
 - All dependencies: `pip install -r requirements.txt`
 - All experiment configs: `config/experiments/`
 - All results: `experiments/results/`
-- Fixed seeds (1–5) for all multi-seed runs
+- Fixed seeds (1–5) for Baseline and Urban Zambia runs; seeds 1–6 for Rural Zambia and Severe Disruption runs
 - Run `pytest tests/unit/ -v` to verify 24/24 tests pass
 
 ---

@@ -61,10 +61,8 @@ class FLServer:
         self.impairment_engine = NetworkImpairmentEngine(config.network_profile)
         self.analytics = AnalyticsTracker(config.output_dir, config.experiment_name)
 
-        # Reproducibility
-        if config.seed is not None:
-            random.seed(config.seed)
-            torch.manual_seed(config.seed)
+        # Reproducibility: RNG seeding is handled in src/main.py
+        # before model initialisation and data partitioning.
 
     def run(self) -> List[RoundMetrics]:
         """Execute the full FL training loop synchronously.

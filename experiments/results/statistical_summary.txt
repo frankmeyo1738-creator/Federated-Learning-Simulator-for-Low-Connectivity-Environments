@@ -6,10 +6,10 @@ Experiment                       | Final Acc (%)   | Final Loss      | Drop Rate
 ---------------------------------------------------------------------------------------------------------
 baseline_fedavg                  | 98.54 ± 0.07    | 0.0443 ± 0.0025 | 0.00 ± 0.00     | 457.7MB ± 0.0MB
 urban_zambia_fedavg              | 98.50 ± 0.13    | 0.0457 ± 0.0043 | 6.20 ± 3.11     | 429.3MB ± 14.3MB
-rural_zambia_fedavg              | 98.41 ± 0.05    | 0.0480 ± 0.0021 | 27.60 ± 3.29    | 331.4MB ± 15.0MB
-severe_disruption_fedavg         | 98.20 ± 0.20    | 0.0538 ± 0.0082 | 60.40 ± 5.68    | 181.3MB ± 26.0MB
-rural_zambia_fedprox             | 98.45 ± 0.14    | 0.0481 ± 0.0046 | 27.60 ± 3.29    | 331.4MB ± 15.0MB
-severe_disruption_fedprox        | 98.28 ± 0.08    | 0.0531 ± 0.0029 | 60.40 ± 5.68    | 181.3MB ± 26.0MB
+rural_zambia_fedavg              | 98.41 ± 0.05    | 0.0479 ± 0.0019 | 29.83 ± 6.21    | 321.2MB ± 28.4MB
+severe_disruption_fedavg         | 98.24 ± 0.20    | 0.0530 ± 0.0076 | 60.67 ± 5.13    | 180.0MB ± 23.5MB
+rural_zambia_fedprox             | 98.45 ± 0.12    | 0.0480 ± 0.0041 | 29.83 ± 6.21    | 321.2MB ± 28.4MB
+severe_disruption_fedprox        | 98.29 ± 0.08    | 0.0525 ± 0.0030 | 60.67 ± 5.13    | 180.0MB ± 23.5MB
 
 =========================================================================================
 STATISTICAL SIGNIFICANCE TESTING (Wilcoxon Signed-Rank Test)
@@ -18,16 +18,16 @@ STATISTICAL SIGNIFICANCE TESTING (Wilcoxon Signed-Rank Test)
 Comparison: Rural Zambia (FedAvg vs FedProx)
   - FedAvg Mean Acc:  98.41%
   - FedProx Mean Acc: 98.45%
-  - Wilcoxon W-stat:  6.0
-  - p-value:          0.8125
-  - Cohen's d:        0.24
+  - Wilcoxon W-stat:  7.5
+  - p-value:          0.5625
+  - Cohen's d:        0.27
   -> Result: NO significant difference (p >= 0.05)
 
 Comparison: Severe Disruption (FedAvg vs FedProx)
-  - FedAvg Mean Acc:  98.20%
-  - FedProx Mean Acc: 98.28%
-  - Wilcoxon W-stat:  4.0
-  - p-value:          0.4375
-  - Cohen's d:        0.50
+  - FedAvg Mean Acc:  98.24%
+  - FedProx Mean Acc: 98.29%
+  - Wilcoxon W-stat:  8.0
+  - p-value:          0.6875
+  - Cohen's d:        0.31
   -> Result: NO significant difference (p >= 0.05)
 
