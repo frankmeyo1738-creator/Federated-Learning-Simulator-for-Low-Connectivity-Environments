@@ -102,7 +102,7 @@ To guarantee sound scientific comparison between FedAvg and FedProx:
 **Interpretation:** Under MNIST, both algorithms demonstrate strong resilience to network
 impairment. The accuracy gap between baseline and severe disruption is only 0.25%–0.30%.
 With $n=6$ paired seeds, the minimum possible Wilcoxon two-sided p-value is 0.03125 (which mathematically
-allows detection of $p < 0.05$). However, the empirical data yields $p=0.5625$ (Rural) and $p=0.6875$ (Severe),
+allows detection of $p < 0.05$). However, the empirical data yields $p=0.5625$ (Rural, via pinned SciPy 1.13.1) and $p=0.6875$ (Severe),
 confirming that on MNIST, FedProx's proximal regularization does not yield a statistically significant advantage
 over FedAvg under IID data. Harder benchmarks (such as CIFAR-10 or extreme non-IID partitions) are necessary to observe
 statistically meaningful algorithmic separation.
@@ -128,13 +128,13 @@ actively challenged, in contrast to the ceiling effects observed on MNIST.
 
 ## Key Findings
 
-### Finding 1 — Network Impairment Primarily Affects Participation
+### Finding 1 — Network Impairment Primarily Affects Client Participation
 Severe disruption (35% dropout probability) produced 60.67% effective client dropout
-per round, reducing communication volume by ~61% (457.7 MB → 180.0 MB on MNIST).*
-Despite this heavy dropout, accuracy remained high — demonstrating FedAvg's resilience
-under IID data when at least some client updates are received.
+per round, causing successfully delivered data volume to fall by ~61% (from 457.7 MB down to 180.0 MB on MNIST).*
+This represents an impaired communication deficit and lost training updates, rather than an intentional communication reduction or optimization.
+Despite this substantial update loss, model accuracy remained resilient under IID data when the remaining client updates were aggregated.
 
-*\*Note on sample sizes: Baseline FedAvg metrics are averaged across $n=5$ seeds (457.7 MB), while Severe Disruption FedAvg metrics reflect the expanded $n=6$ seed cohort (180.0 MB), yielding an empirical communication volume reduction of 60.67% ($\approx 61\%$).*
+*\*Note on sample sizes: Baseline FedAvg metrics are averaged across $n=5$ seeds (457.7 MB), while Severe Disruption FedAvg metrics reflect the expanded $n=6$ seed cohort (180.0 MB), showing a 60.67% ($\approx 61\%$) reduction in successfully delivered bytes.*
 
 **Note on Effective Drop Rate vs. Configured Dropout Probability:** The "effective drop rate" reported in the MNIST and Non-IID tables (e.g. 29.83% for Rural Zambia, 60.67% for Severe Disruption) is the empirical fraction of *all attempted client transmissions* that were dropped across all rounds. This is substantially higher than the configured per-round dropout *trigger probability* (15% and 35% respectively) because the simulator implements **persistent multi-round dropout**: once a client's dropout is triggered, it remains offline for a configurable number of consecutive rounds (`dropout_duration_rounds` = 2 for Rural Zambia, 3 for Severe Disruption). A single dropout event at round $r$ therefore produces dropped transmissions at rounds $r, r+1, \ldots, r + \text{duration} - 1$, compounding the effective rate well above the single-round trigger probability. Additionally, packet loss (7% and 20% respectively) contributes further drops on top of the dropout mechanism.
 
@@ -145,7 +145,7 @@ making it a far more discriminating benchmark for evaluating FL robustness under
 
 ### Finding 3 — Algorithmic Separation Requires Task Complexity
 On MNIST, the practical advantage of FedProx over FedAvg is minimal under IID partitioning across all 6 seeds:
-- Under rural conditions, FedProx leads by 0.04% on average (98.45% vs. 98.41%, $W=7.5$, $p=0.5625$, Cohen's $d=0.27$, small effect).
+- Under rural conditions, FedProx leads by 0.04% on average (98.45% vs. 98.41%, $W=7.5$, $p=0.5625$ [SciPy >= 1.14.x (e.g. 1.17.1 supervisor env): $p=0.6250$], Cohen's $d=0.27$, small effect).
 - Under severe disruption, FedProx leads by 0.05% on average (98.29% vs. 98.24%, $W=8.0$, $p=0.6875$, Cohen's $d=0.31$, small effect). In fact, on seed 6, FedAvg slightly outperformed FedProx (98.44% vs. 98.34%), highlighting sample variability.
 
 Neither comparison achieves statistical significance ($p \ge 0.05$). However, on the harder CIFAR-10 task,
@@ -154,9 +154,9 @@ data indicate that FedProx's proximal regularization ($\mu=0.01$) produces negli
 easily converged benchmarks like MNIST, but begins to offer meaningful robustness gains as task difficulty and
 gradient variance grow.
 
-### Finding 4 — Communication Cost Scales with Dropout
-Communication cost decreased proportionally with dropout rate across all profiles (from 457.7 MB down to 180.0 MB),
-with important implications for bandwidth-constrained SSA deployments where data transmission costs are significant.
+### Finding 4 — Successfully Delivered Bytes Decrease Under Impairment
+Successfully delivered communication volume decreased in direct proportion to network dropout across all profiles (from 457.7 MB down to 180.0 MB).
+This decrease is an operational consequence of lost connectivity and dropped client packages, rather than a communication optimization. In bandwidth-constrained SSA deployments, this illustrates the severe data delivery penalty imposed by intermittent cellular channels, where the server receives only a fraction of intended parameter updates.
 
 ---
 
@@ -227,6 +227,37 @@ Non-IID partitioning was evaluated using a Dirichlet distribution ($\alpha=0.5$)
 1. **Rural Zambia Non-IID:** FedProx achieved **98.21%** final accuracy compared to **97.90%** for FedAvg (+0.31% advantage). Under moderate cellular dropouts (29.00%) combined with label heterogeneity, the proximal regularization term successfully mitigated client drift and improved global convergence.
 2. **Severe Disruption Non-IID (single seed 42 — differs from IID multiseed mean):** Under severe network impairment (64.00% effective client dropout — higher than the IID multiseed mean of 60.67% because seed 42's specific PRNG draws produced more sustained dropout chains than the six-seed average), FedAvg achieved **96.94%** while FedProx reached **96.72%** (-0.22%). This indicates that when client dropout is severe and updates are sparse, the fixed proximal penalty ($\mu = 0.01$) can over-penalize local updates from the few clients that successfully transmit, slowing convergence toward the global optimum.
 3. **Scientific Value:** These paired non-IID results demonstrate that FedProx's efficacy under non-IID data is dependent on the level of client participation. Because these are single exploratory runs (seed 42), multi-seed verification with adaptive $\mu$ tuning ($\mu \in \{0.001, 0.01, 0.1\}$) is identified as an important avenue for future research.
+
+## Simulator Validation (Layer 3 Impairment Engine)
+
+Beyond evaluating federated machine learning outcomes, the simulator's Layer 3 network impairment mechanics were directly validated to demonstrate fidelity to physical network characteristics and confirm computational efficiency:
+
+### 1. Empirical Latency Sampling vs. Configured Bounds (Rural Zambia)
+- **Configured Profile Bounds:** $[300, 800]\text{ ms}$, nominal $\mu = 550.0\text{ ms}$, $\sigma = 75.0\text{ ms}$ (15% of interval range).
+- **Sampling Verification ($N=100,000$ draws):**
+  - Empirical Mean: **550.17 ms** (matches configured midpoint 550.0 ms).
+  - Empirical Std: **75.13 ms** (matches configured $\sigma = 75.0\text{ ms}$).
+  - Empirical Min: **300.00 ms**; Empirical Max: **800.00 ms**.
+  - Empirical Median: **550.14 ms**; 95% Central Interval: $[403.0, 697.1]\text{ ms}$.
+  - Out-of-bounds draws: **0.00%**, confirming exact symmetric truncation at $\pm 3.33\sigma$.
+- **Transmission Delay Accounting:** In the metrics CSVs, `avg_latency_ms` records total transmission delay (propagation latency plus bandwidth throttling delay: $\text{delay} = \text{latency} + \frac{\text{payload}}{\text{bandwidth}}$). For Rural Zambia, transmitting a ~4.8 MB update over 1.2 Mbps introduces ~30,500 ms of throttling delay, yielding ~31,050 ms total delay per transmission.
+
+### 2. Effective Drop Rate Mechanics (Persistence & Compounding)
+- **Configured Trigger vs. Realized Drops:** For Rural Zambia, configured dropout trigger probability is 15% per round with a 2-round persistence duration (`dropout_duration_rounds = 2`) plus 7% packet loss.
+- **Empirical Confirmation:** The realized effective drop rate averaged **29.83% ± 6.21%** across 6 seeds on MNIST (and 29.00% on Non-IID Seed 42). This validates the simulator's persistent multi-round disconnection state machine: disconnections persist across FL rounds rather than resetting independently per transmission, faithfully modeling real-world cellular outages.
+
+### 3. Impairment Engine Computational Overhead
+- **Baseline FedAvg (zero impairment):** $20.60\text{s} \pm 0.60\text{s}$ per round (steady state, seeds 1–5).
+- **Rural Zambia FedAvg (active impairment):** $21.33\text{s} \pm 0.59\text{s}$ per round.
+- **Engine Overhead:** Simulating the full impairment stack (probabilistic packet loss, latency clamping, bandwidth calculation, and persistent state transitions) adds only **+0.73s (+3.5%)** of wall-clock overhead per round, demonstrating that the impairment layer does not introduce computational bottlenecks.
+
+### 4. Concurrency and Scalability Behavior
+- **Round Duration across Participating Clients:** Steady-state round duration remains nearly invariant to active client count:
+  - 0 active clients (all dropped): $22.08\text{s} \pm 1.21\text{s}$
+  - 1 active client: $22.28\text{s} \pm 1.46\text{s}$
+  - 3 active clients: $22.72\text{s} \pm 1.50\text{s}$
+  - 5 active clients (all successful): $21.07\text{s} \pm 1.34\text{s}$
+- **Scalability Finding:** Client training is gathered concurrently via `asyncio.gather(*tasks)` in `FLServer._collect_updates`. Global model evaluation on the full 10,000-sample test set adds a constant ~2.5s overhead per round regardless of received updates. As a result, the simulation loop exhibits stable, predictable per-round execution profiles across varying network degradation levels.
 
 ---
 

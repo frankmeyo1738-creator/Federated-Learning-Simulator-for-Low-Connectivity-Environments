@@ -59,7 +59,8 @@ class NetworkImpairmentEngine:
         self._dropout_end: Dict[int, int] = {}
 
         # Metrics tracking
-        self._latency_samples: list[float] = []
+        self._latency_samples: list[float] = []  # Total transmission delay (propagation + bandwidth throttle)
+        self._propagation_latency_samples: list[float] = []  # Pure propagation latency (ms)
         self._total_transmissions = 0
         self._total_drops = 0
 
@@ -116,6 +117,7 @@ class NetworkImpairmentEngine:
         latency = await self._apply_latency()
 
         total_delay_ms = latency + bw_delay
+        self._propagation_latency_samples.append(latency)
         self._latency_samples.append(total_delay_ms)
 
         logger.debug(
@@ -126,10 +128,24 @@ class NetworkImpairmentEngine:
         return update
 
     def get_avg_latency(self) -> float:
-        """Return the average latency across all successful transmissions."""
+        """Return the average total transmission delay (ms) across successful transmissions.
+
+        Note: Historically named 'avg_latency_ms' in the metrics CSV; includes both
+        propagation latency and bandwidth throttling delay. Kept for backward compatibility.
+        """
         if not self._latency_samples:
             return 0.0
         return sum(self._latency_samples) / len(self._latency_samples)
+
+    def get_avg_propagation_latency(self) -> float:
+        """Return the average pure propagation latency (ms) across successful transmissions."""
+        if not self._propagation_latency_samples:
+            return 0.0
+        return sum(self._propagation_latency_samples) / len(self._propagation_latency_samples)
+
+    def get_avg_total_delay(self) -> float:
+        """Return the average total transmission delay (latency + bandwidth throttle in ms)."""
+        return self.get_avg_latency()
 
     def get_drop_rate(self) -> float:
         """Return the observed drop rate so far."""
@@ -140,6 +156,7 @@ class NetworkImpairmentEngine:
     def reset_metrics(self) -> None:
         """Reset per-experiment metrics."""
         self._latency_samples.clear()
+        self._propagation_latency_samples.clear()
         self._total_transmissions = 0
         self._total_drops = 0
 

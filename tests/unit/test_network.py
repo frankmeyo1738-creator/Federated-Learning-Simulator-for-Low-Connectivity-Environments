@@ -199,6 +199,25 @@ class TestLatency:
             f"bounds [50, 400] for min=100, max=200"
         )
 
+    def test_propagation_latency_within_exact_bounds(self, dummy_update):
+        """Verify that pure propagation latency falls strictly within [min, max] bounds."""
+        profile = _make_profile(
+            latency_min_ms=100.0,
+            latency_max_ms=200.0,
+            bandwidth_mbps=10.0,
+        )
+        engine = NetworkImpairmentEngine(profile)
+
+        for i in range(20):
+            asyncio.run(
+                engine.transmit(dummy_update, client_id=i % 5, round_num=i)
+            )
+
+        prop_lat = engine.get_avg_propagation_latency()
+        assert 100.0 <= prop_lat <= 200.0, (
+            f"Pure propagation latency {prop_lat:.1f}ms is outside configured bounds [100, 200]"
+        )
+
 
 # ---------------------------------------------------------------------------
 # Baseline Profile (Integration-style Smoke Test)

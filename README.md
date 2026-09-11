@@ -94,13 +94,13 @@ bash scripts/run_noniid_experiments.sh
 
 ## Key Findings
 
-1. **Network impairment primarily affects participation and communication cost, not accuracy.** Under MNIST, severe disruption (60.67% effective dropout) reduced accuracy by only 0.30% (98.54% → 98.24%) while cutting communication volume by ~61% (457.7 MB → 180.0 MB).*
+1. **Network impairment primarily affects client participation and delivered data volume, not accuracy.** Under MNIST, severe disruption (60.67% effective dropout) reduced accuracy by only 0.30% (98.54% → 98.24%) while causing successfully delivered communication volume to fall by ~61% (from 457.7 MB down to 180.0 MB).* This reduction reflects dropped parameter updates and lost connectivity rather than an intentional optimization.
 
 2. **CIFAR-10 reveals clearer degradation.** On a harder dataset, severe disruption produced a 3.78% accuracy drop, demonstrating that impairment effects are dataset-dependent.
 
 3. **FedProx shows modest robustness gains under severe disruption.** FedProx outperformed FedAvg by 0.88% on CIFAR-10 under severe disruption. On MNIST, FedProx leads by 0.05% on average (98.29% vs 98.24%, p=0.6875, Cohen's d=0.31, small effect, not significant). Notably, on seed 6, FedAvg slightly outperformed FedProx (98.44% vs 98.34%), illustrating sample variability and the absence of a reliable algorithmic advantage on this task.
 
-4. **Communication cost scales directly with dropout rate.** Severe disruption transmitted ~61% less data than baseline (180.0 MB vs. 457.7 MB), with important implications for bandwidth-constrained deployments.
+4. **Successfully delivered bytes decrease in direct proportion to dropout rate.** Due to severe network drops, ~61% fewer bytes successfully reached the aggregation server under severe disruption compared to baseline (180.0 MB vs. 457.7 MB), illustrating the communication deficit in intermittent deployments.
 
 *\*Note on sample sizes: Baseline FedAvg metrics are averaged across $n=5$ seeds, while Severe Disruption FedAvg metrics are averaged across the expanded $n=6$ seed cohort.*
 

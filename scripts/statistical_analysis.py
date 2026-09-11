@@ -11,6 +11,7 @@ Author: Frank Meyo, FL Network Simulator UNZA 2026
 import os
 import numpy as np
 import pandas as pd
+import scipy
 from scipy import stats
 
 RESULTS_DIR = "experiments/results/multiseed"
@@ -87,6 +88,7 @@ def main():
     output = []
     output.append("=========================================================================================")
     output.append("FL NETWORK SIMULATOR — MULTI-SEED STATISTICAL SUMMARY")
+    output.append(f"SciPy version: {scipy.__version__} | NumPy version: {np.__version__}")
     output.append("=========================================================================================\n")
     
     output.append(f"{'Experiment':<32} | {'Final Acc (%)':<15} | {'Final Loss':<15} | {'Drop Rate (%)':<15} | {'Total Bytes':<15}")
@@ -127,8 +129,15 @@ def main():
         output.append(f"Comparison: {label} (FedAvg vs FedProx)")
         if len(acc1) >= 5 and len(acc2) >= 5 and len(acc1) == len(acc2):
             try:
-                # Wilcoxon signed-rank test
-                # zero_method='zsplit' handles cases where differences are exactly 0
+                # Wilcoxon signed-rank test: stats.wilcoxon(acc1, acc2, zero_method='zsplit')
+                # SciPy version dependency note on p-value discrepancy (Rural Zambia, W=7.5):
+                # With n=6 pairs, Seed 4 (-0.0004) and Seed 6 (+0.0004) have tied absolute magnitudes.
+                #   - SciPy 1.13.1 (pinned in requirements.txt): p = 0.5625
+                #     The 1.13.x exact wilcoxon() evaluates the untied-rank exact distribution.
+                #   - SciPy >= 1.14.x (e.g. 1.17.1, supervisor environment): p = 0.6250
+                #     Later versions updated the exact algorithm to correctly account for tied ranks.
+                # Both p >> 0.05; conclusion (no significant FedProx advantage) is unchanged.
+                # scipy.__version__ is printed in the output header below for reproducibility.
                 w, p = stats.wilcoxon(acc1, acc2, zero_method='zsplit')
                 d = cohen_d(acc2, acc1) # Positive d means FedProx > FedAvg
                 
