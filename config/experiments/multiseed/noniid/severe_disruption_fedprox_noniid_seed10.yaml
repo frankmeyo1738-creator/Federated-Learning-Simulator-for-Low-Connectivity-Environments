@@ -1,0 +1,24 @@
+# Non-IID variant — Dirichlet alpha=0.5
+# Severe Disruption — Extreme Network Impairment | FedProx (mu=0.01) | seed 10
+# Run WITHOUT --iid flag (Dirichlet partitioning is the default):
+#   python -m src.main --config config/experiments/multiseed/noniid/severe_disruption_fedprox_noniid_seed10.yaml
+experiment_name: severe_disruption_fedprox_noniid_seed10
+num_clients: 10
+num_rounds: 20
+fraction_fit: 0.5
+algorithm: fedprox
+mu: 0.01
+dataset: mnist
+local_epochs: 2
+batch_size: 32
+learning_rate: 0.01
+seed: 10
+output_dir: experiments/results/multiseed/noniid
+network_profile:
+  name: severe_disruption
+  latency_min_ms: 800
+  latency_max_ms: 2000
+  bandwidth_mbps: 0.3
+  packet_loss_rate: 0.2
+  dropout_probability: 0.35
+  dropout_duration_rounds: 3
