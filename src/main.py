@@ -87,7 +87,15 @@ def main() -> None:
             random.seed(config.seed)
             np.random.seed(config.seed)
             torch.manual_seed(config.seed)
-            logger.info("RNG seeded: random, numpy, torch — seed=%d", config.seed)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(config.seed)
+                torch.backends.cudnn.deterministic = True
+                torch.backends.cudnn.benchmark = False
+            logger.info(
+                "RNG seeded: random, numpy, torch (cuda=%s) — seed=%d",
+                torch.cuda.is_available(),
+                config.seed,
+            )
 
         # ── Model architecture ─────────────────────────────────────────
         logger.info("Initialising model for dataset: %s", config.dataset)
