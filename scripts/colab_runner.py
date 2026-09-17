@@ -61,8 +61,9 @@ if not os.path.exists(REPO_DIR):
     print(f"Cloning repository from {REPO_URL}...")
     subprocess.run(["git", "clone", REPO_URL, REPO_DIR], check=True)
 else:
-    print("Repository directory already exists. Fetching latest changes...")
-    subprocess.run(["git", "-C", REPO_DIR, "pull"], check=True)
+    print("Repository exists. Syncing cleanly with origin/main...")
+    subprocess.run(["git", "-C", REPO_DIR, "fetch", "origin", "main"], check=True)
+    subprocess.run(["git", "-C", REPO_DIR, "reset", "--hard", "origin/main"], check=True)
 
 os.chdir(REPO_DIR)
 print(f"Current working directory: {os.getcwd()}")
