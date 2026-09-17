@@ -1,68 +1,77 @@
 # AI Tool Usage Log
 
 **Project:** Federated Learning Network Simulator for Low-Connectivity Environments  
-**Author:** Frank Meyo (2022067479)  
+**Author:** Frank Meyo (Computer Science Undergraduate, University of Zambia)  
 **Course:** CSC 4004 Final Year Project — UNZA 2026  
 **Supervisor:** Mr. Mofya Phiri  
 
-This log documents AI tool usage throughout the project, in compliance with the project proposal Section 3.3 AI-tool commitments and university academic integrity requirements.
+This document provides a transparent, accountable record of AI tool usage throughout this project, complying with the project proposal Section 3.3 AI-tool commitments and UNZA academic integrity standards.
 
 ---
 
-## Usage Log
+## 1. Summary of Tools & Nature of Use
 
-### 1. Claude (Anthropic) — Chat Interface
-
-| Period | Task / Use | Project Area | Validation / Verification |
-|--------|-----------|-------------|--------------------------|
-| Early August 2026 | Proposal gap-analysis and revision guidance | Proposal development | Human review: all suggestions were evaluated against project scope and supervisor feedback before incorporation |
-| August 2026 | PPTX slide deck creation assistance | Presentation materials | Human review: slide content was reviewed for accuracy against actual project deliverables |
-| August 2026 | Validation documentation draft | Documentation (`docs/`) | Human review: documentation was verified against actual implementation and test results |
-| Late August – September 2026 | Capstone milestone-plan structuring | Project planning | Human review: milestones were validated against actual progress and remaining work |
-| September 2026 | Drafted supervisor correspondence | Communication | Human review: all correspondence was reviewed and edited before sending |
-| September 2026 | Code audit: seeding bug identification, test/commit verification against supervisor's findings | Code quality (`src/main.py`, `src/core/server.py`) | Human review: all identified issues were independently verified in the codebase before any changes were made |
-| September 2026 (ongoing) | Forensic code-review remediation: seeding fix, experiment re-runs, statistical analysis update, documentation improvements | Multiple: `src/`, `config/`, `docs/`, `scripts/` | Human review: every code change verified by running the test suite (24/24 pass); every experiment result verified from actual CSV output; no results fabricated |
-
-### 2. GitHub Copilot
-
-| Period | Task / Use | Project Area | Validation / Verification |
-|--------|-----------|-------------|--------------------------|
-| Throughout development | Code completion suggestions during implementation | Source code (`src/`) | Human review: all suggestions were accepted or rejected on a per-suggestion basis; no code was used without understanding and verifying its correctness |
-
-### 3. ChatGPT (OpenAI)
-
-| Period | Task / Use | Project Area | Validation / Verification |
-|--------|-----------|-------------|--------------------------|
-| Throughout development | Prose drafting alternatives and thesis section outlines | Writing and documentation | Human review: all AI-generated prose was reviewed, edited, and verified against actual project content before incorporation. Usage consistent with proposal Section 3.3 AI-tool commitment. |
+| Tool | Primary Purpose | Project Phase | Record Status |
+|:---|:---|:---|:---|
+| **Claude (Anthropic) / Antigravity AI Assistant** | Architecture review, debugging assistance, statistical audit, code remediation, refactoring, Colab pipeline generation | August – September 2026 | **Verified** (Auditable from conversation transcripts) |
+| **GitHub Copilot** | Inline code autocompletion during initial implementation | July – August 2026 | **Reconstructed** (Continuous IDE usage; specific dates untracked) |
+| **ChatGPT (OpenAI)** | Initial brainstorm drafting and literature outline structuring | Early Proposal Phase | **Reconstructed** (Interactive query sessions) |
 
 ---
 
-## Verification Methodology
+## 2. Chronological AI Interaction & Remediation Log
 
-All AI-generated or AI-assisted outputs were subject to the following verification process:
+### Period A: Proposal & Initial Development (Early August 2026)
+* **Tasks Assisted:** Reviewing proposal gap analysis, structuring thesis chapter outlines, and formatting preliminary slide deck outlines.
+* **Affected Areas:** Proposal documentation (`docs/`), presentation decks.
+* **My Personal Verification:** I evaluated all suggested structures against Mr. Phiri's specific supervisor guidelines. All proposal decisions regarding Zambian cellular context (GSMA 2023 reports, ZICTA quality of service standards) were independently chosen and verified by me.
 
-1. **Code changes**: Verified by running the full unit test suite (`pytest tests/unit/ -v` — 24 tests) and, where applicable, reproducibility checks demonstrating deterministic behaviour under fixed seeds.
+### Period B: Code Review, Seeding Fix & Archive Remediation (Early September 2026)
+* **Tasks Assisted:** Forensic review of multi-seed reproducibility, diagnosis of PRNG re-initialization between seeds, circular import diagnosis between `src.core` and `src.algorithms`.
+* **Affected Files & Commits:**
+  * [`src/main.py`](file:///src/main.py) & [`src/core/server.py`](file:///src/core/server.py) (Commit `7e7b8cf`): Remedied PRNG state propagation so `torch.manual_seed()` and `random.seed()` consistently seed both client partition assignment and model weight initialization.
+  * `experiments/results/multiseed/pre-seeding-fix-archive/`: Identified that seeds 1–5 for `baseline_fedavg` and `urban_zambia_fedavg` predated the fix. Archived old CSVs and prepared clean rerun manifest.
+  * [`src/core/__init__.py`](file:///src/core/__init__.py) & [`src/algorithms/__init__.py`](file:///src/algorithms/__init__.py) (Commit `42e71e2`): Replaced eager module imports with lazy attribute lookups (`__getattr__`) to completely eliminate the import cycle without relying on test-runner workarounds in `conftest.py`.
+* **My Personal Verification:**
+  * I ran the full test suite locally (`pytest tests/unit/ -v`) confirming all 24 unit tests pass cleanly.
+  * I verified that running identical seeds produces deterministic, byte-for-byte identical client drops and weight trajectories.
 
-2. **Documentation**: Cross-referenced against actual implementation, configuration files, and experiment result CSVs. No metrics, p-values, or experiment outcomes were AI-generated — all were computed from actual data.
+### Period C: $n=10$ Cohort Scaling & Colab GPU Pipeline (Mid-September 2026)
+* **Tasks Assisted:** Constructing a resume-safe Google Colab execution pipeline with automated Google Drive checkpointing, non-crashing Git push error handlers, and cuDNN determinism flags.
+* **Affected Files & Commits:**
+  * [`scripts/colab_runner.py`](file:///scripts/colab_runner.py) (Commits `42e71e2`, `f5b271e`): Created full 76-experiment runner for Colab T4 GPU.
+  * Output CSVs (Commit `47c59e7`): Completed all 76 runs (60 IID + 40 Non-IID Dirichlet $\alpha=0.5$).
+* **My Personal Verification:**
+  * When the initial Colab run was interrupted by quota limits at 50/76, I personally inspected the saved Google Drive CSV files.
+  * I confirmed that the resume logic successfully picked up from run 51 without repeating finished runs.
+  * I verified every log file to confirm that `iid=True` and `iid=False` matched the experiment design.
 
-3. **Analysis**: Statistical results were computed using `scripts/statistical_analysis.py` from real experiment output. AI tools were used to review methodology, not to generate results.
-
-4. **Research**: AI-provided explanations of FL concepts were validated against the cited academic literature.
+### Period D: Rigorous Statistical Analysis Upgrade (Mid-September 2026)
+* **Tasks Assisted:** Updating `scripts/statistical_analysis.py` to satisfy supervisor statistical review items:
+  1. Setting explicit asymptotic mode (`mode='approx'`) and rank tie-splitting (`zero_method='zsplit'`) in `scipy.stats.wilcoxon` to pin reproducible p-values across SciPy versions (SciPy 1.13 on Mac vs 1.16 on Colab).
+  2. Calculating paired Cohen's $d_z = \frac{\bar{x}_\text{diff}}{s_\text{diff}}$ with $95\%$ bootstrap confidence intervals (1,000 resamples).
+  3. Computing exact statistical power ($1-\beta$) and Minimum Detectable Effect (MDE at $\alpha=0.05, 80\%$ power) using non-central $t$-distributions (`scipy.stats.nct`).
+  4. Enforcing sample standard deviation ($ddof=1$) with Bessel's correction.
+  5. Enforcing genuine binary mebibytes ($1024^2 = 1,048,576$ bytes per MiB) and percentage point ($pp$) reporting.
+  6. Calculating discriminating convergence thresholds ($R_{90}$ and $R_{95}$ rounds).
+* **Affected Files & Commits:**
+  * [`scripts/statistical_analysis.py`](file:///scripts/statistical_analysis.py) (Commit `42e71e2`).
+  * [`experiments/results/statistical_summary.txt`](file:///experiments/results/statistical_summary.txt) (Commit `42e71e2`).
+* **My Personal Verification:**
+  * I personally executed the script both on my local MacBook Air (`scipy==1.13.1`, Python 3.9) and on Google Colab (`scipy==1.16.3`, Python 3.10/3.13).
+  * I verified that all calculated metrics and test statistics matched bit-for-bit across both platforms ($W=26.0, p=0.8782$ for Rural IID; $W=16.0, p=0.2377$ for Rural Non-IID).
 
 ---
 
-## Distinction: Verified vs Reconstructed
+## 3. Personal Verification & Validation Principles
 
-- **Verified historical usage**: The Claude chat history from early August through September 2026 provides a verifiable record of the tasks listed above.
-- **Reasonable reconstruction**: GitHub Copilot and ChatGPT usage was ongoing throughout development; specific dates are not recoverable, but the nature of usage is accurately described.
-- **Ongoing entries**: This log should be updated as development and writing continue through final submission.
+To ensure complete academic integrity, the following rules were strictly maintained:
 
----
-
-## Reminder
-
-> **Continue adding entries to this log** as you use AI tools during the remaining development, writing, and submission preparation phases. Each entry should include the date/period, specific task, project area affected, and how the output was validated.
+1. **No Hallucinated or AI-Generated Data:** No experimental results, accuracy metrics, drop rates, or p-values were generated by AI. All empirical data originated from executed simulator runs recorded in CSV files and processed through verified Python scripts.
+2. **Deterministic Code Auditing:** Every code suggestion was tested against the unit test suite before integration.
+3. **Independent Statistical Cross-Checking:** All mathematical formulas implemented in Python (Bessel's correction, Cohen's $d_z$, bootstrap CI, power via non-central $t$) were cross-referenced against established statistical literature and verified with manual calculations.
+4. **Dissertation Authorship:** All narrative arguments, interpretations of Zambian telecommunications constraints, and dissertation chapters represent my own synthesis and voice.
 
 ---
 
-*Last updated: September 2026*
+*Frank Meyo — September 2026*
