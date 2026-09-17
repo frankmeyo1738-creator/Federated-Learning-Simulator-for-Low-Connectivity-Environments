@@ -1,33 +1,83 @@
-=========================================================================================
-FL NETWORK SIMULATOR — MULTI-SEED STATISTICAL SUMMARY
-=========================================================================================
+=================================================================================================================================================
+FL NETWORK SIMULATOR — MULTI-SEED STATISTICAL SUMMARY (n=10 COHORT)
+SciPy Version: 1.13.1 (Pinned) | NumPy Version: 2.0.2 | Cohort Size: n=10
+Methodology: Sample SD (ddof=1), Wilcoxon Signed-Rank (zero_method='zsplit', two-sided, mode='approx'), paired Cohen's d (dz)
+MiB Conversion: bytes / 1048576 (1024², genuine binary mebibyte)
+=================================================================================================================================================
 
-Experiment                       | Final Acc (%)   | Final Loss      | Drop Rate (%)   | Total Bytes    
----------------------------------------------------------------------------------------------------------
-baseline_fedavg                  | 98.54 ± 0.07    | 0.0443 ± 0.0025 | 0.00 ± 0.00     | 457.7MB ± 0.0MB
-urban_zambia_fedavg              | 98.50 ± 0.13    | 0.0457 ± 0.0043 | 6.20 ± 3.11     | 429.3MB ± 14.3MB
-rural_zambia_fedavg              | 98.41 ± 0.05    | 0.0479 ± 0.0019 | 29.83 ± 6.21    | 321.2MB ± 28.4MB
-severe_disruption_fedavg         | 98.24 ± 0.20    | 0.0530 ± 0.0076 | 60.67 ± 5.13    | 180.0MB ± 23.5MB
-rural_zambia_fedprox             | 98.45 ± 0.12    | 0.0480 ± 0.0041 | 29.83 ± 6.21    | 321.2MB ± 28.4MB
-severe_disruption_fedprox        | 98.29 ± 0.08    | 0.0525 ± 0.0030 | 60.67 ± 5.13    | 180.0MB ± 23.5MB
+--- 1. IID COHORT (Full n=10 Seeds, Post-Seeding Fix) ---
 
-=========================================================================================
-STATISTICAL SIGNIFICANCE TESTING (Wilcoxon Signed-Rank Test)
-=========================================================================================
+Experiment                           | n   | Final Acc (%)    | Acc Range [Min, Max]   | Final Loss      | Drop Rate (%)   | Delivered (MiB)    | R90/R95   
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+baseline_fedavg                      | 10  | 98.52 ± 0.05     | [98.45%, 98.58%]       | 0.0446 ± 0.0024 | 0.00 ± 0.00     | 457.7 ± 0.0 MiB    | 1.0 / 4.0 
+urban_zambia_fedavg                  | 10  | 98.52 ± 0.08     | [98.33%, 98.63%]       | 0.0443 ± 0.0031 | 5.60 ± 3.03     | 432.1 ± 13.8 MiB   | 1.0 / 3.9 
+rural_zambia_fedavg                  | 10  | 98.44 ± 0.05     | [98.34%, 98.51%]       | 0.0469 ± 0.0025 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 1.2 / 4.4 
+severe_disruption_fedavg             | 10  | 98.28 ± 0.16     | [97.97%, 98.45%]       | 0.0516 ± 0.0061 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 1.1 / 4.5 
+rural_zambia_fedprox                 | 10  | 98.45 ± 0.10     | [98.23%, 98.60%]       | 0.0471 ± 0.0036 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 1.2 / 4.4 
+severe_disruption_fedprox            | 10  | 98.30 ± 0.07     | [98.22%, 98.42%]       | 0.0517 ± 0.0028 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 1.2 / 4.7 
 
-Comparison: Rural Zambia (FedAvg vs FedProx)
-  - FedAvg Mean Acc:  98.41%
-  - FedProx Mean Acc: 98.45%
-  - Wilcoxon W-stat:  7.5
-  - p-value:          0.5625
-  - Cohen's d:        0.27
-  -> Result: NO significant difference (p >= 0.05)
+--- 2. NON-IID COHORT (Full n=10 Seeds, Dirichlet Partitioning) ---
 
-Comparison: Severe Disruption (FedAvg vs FedProx)
-  - FedAvg Mean Acc:  98.24%
-  - FedProx Mean Acc: 98.29%
-  - Wilcoxon W-stat:  8.0
-  - p-value:          0.6875
-  - Cohen's d:        0.31
-  -> Result: NO significant difference (p >= 0.05)
+Experiment                           | n   | Final Acc (%)    | Acc Range [Min, Max]   | Final Loss      | Drop Rate (%)   | Delivered (MiB)    | R90/R95   
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+rural_zambia_fedavg_noniid           | 10  | 97.74 ± 0.93     | [95.15%, 98.38%]       | 0.0698 ± 0.0297 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 2.5 / 7.3 
+rural_zambia_fedprox_noniid          | 10  | 97.72 ± 0.93     | [95.12%, 98.34%]       | 0.0699 ± 0.0286 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 2.6 / 7.3 
+severe_disruption_fedavg_noniid      | 10  | 97.29 ± 0.77     | [95.69%, 98.43%]       | 0.0836 ± 0.0236 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 3.7 / 10.1
+severe_disruption_fedprox_noniid     | 10  | 97.30 ± 0.78     | [95.70%, 98.38%]       | 0.0836 ± 0.0242 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 3.6 / 10.3
+
+=================================================================================================================================================
+--- 3. PAIRED STATISTICAL SIGNIFICANCE TESTS (FedAvg vs FedProx) ---
+=================================================================================================================================================
+
+[A] IID Network Scenarios:
+
+Comparison: Rural Zambia (IID) (FedAvg vs FedProx)
+  - Paired Cohort:    n = 10 paired seeds
+  - FedAvg Mean Acc:  98.44% (SD=0.05 pp)
+  - FedProx Mean Acc: 98.45% (SD=0.10 pp)
+  - Mean Difference:  +0.01 percentage points (pp)
+  - Wilcoxon W-stat:  W = 26.0 (zero_method='zsplit', two-sided, mode='approx')
+  - Asymptotic p:     p = 0.8782
+  - Paired Cohen's d: d_z = 0.10 [95% CI: -0.75, 0.66]
+  - Statistical Power: 6.0% (at observed effect size |d|=0.10)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
+  -> Significance:    NO statistically significant difference (p >= 0.05)
+
+Comparison: Severe Disruption (IID) (FedAvg vs FedProx)
+  - Paired Cohort:    n = 10 paired seeds
+  - FedAvg Mean Acc:  98.28% (SD=0.16 pp)
+  - FedProx Mean Acc: 98.30% (SD=0.07 pp)
+  - Mean Difference:  +0.02 percentage points (pp)
+  - Wilcoxon W-stat:  W = 25.5 (zero_method='zsplit', two-sided, mode='approx')
+  - Asymptotic p:     p = 0.8383
+  - Paired Cohen's d: d_z = 0.17 [95% CI: -0.98, 0.68]
+  - Statistical Power: 7.6% (at observed effect size |d|=0.17)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
+  -> Significance:    NO statistically significant difference (p >= 0.05)
+
+[B] Non-IID Network Scenarios:
+
+Comparison: Rural Zambia (Non-IID) (FedAvg vs FedProx)
+  - Paired Cohort:    n = 10 paired seeds
+  - FedAvg Mean Acc:  97.74% (SD=0.93 pp)
+  - FedProx Mean Acc: 97.72% (SD=0.93 pp)
+  - Mean Difference:  -0.02 percentage points (pp)
+  - Wilcoxon W-stat:  W = 16.0 (zero_method='zsplit', two-sided, mode='approx')
+  - Asymptotic p:     p = 0.2377
+  - Paired Cohen's d: d_z = -0.34 [95% CI: -3.64, 0.22]
+  - Statistical Power: 16.1% (at observed effect size |d|=0.34)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
+  -> Significance:    NO statistically significant difference (p >= 0.05)
+
+Comparison: Severe Disruption (Non-IID) (FedAvg vs FedProx)
+  - Paired Cohort:    n = 10 paired seeds
+  - FedAvg Mean Acc:  97.29% (SD=0.77 pp)
+  - FedProx Mean Acc: 97.30% (SD=0.78 pp)
+  - Mean Difference:  +0.01 percentage points (pp)
+  - Wilcoxon W-stat:  W = 27.0 (zero_method='zsplit', two-sided, mode='approx')
+  - Asymptotic p:     p = 0.9593
+  - Paired Cohen's d: d_z = 0.11 [95% CI: -0.75, 0.70]
+  - Statistical Power: 6.2% (at observed effect size |d|=0.11)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
+  -> Significance:    NO statistically significant difference (p >= 0.05)
 
