@@ -28,35 +28,32 @@ But before deployment, researchers and practitioners need to know:
 - How much bandwidth does FL consume under realistic SSA conditions?
 - At what point does network impairment begin to meaningfully degrade model quality?
 
-No existing open-source simulator answers these questions with SSA-calibrated parameters.
+No existing open-source simulator answers these questions with SSA-inspired, empirically grounded parameters.
 
 ---
 
 ## What This Simulator Contributes
 
-1. **SSA-Calibrated Network Profiles** — Four network profiles derived from GSMA 2023
+1. **SSA-Inspired Network Profiles** — Four network profiles inspired by GSMA 2023
    mobile connectivity data for Sub-Saharan Africa, covering urban, rural, and severely
    disrupted connectivity scenarios specific to the region.
 
-2. **Reproducible Comparative Experiments** — 34 multi-seed runs across 6 experiment
-   configurations (baseline and urban: n=5 seeds each; rural zambia and severe disruption: n=6
-   seeds each), with statistical analysis (Wilcoxon signed-rank tests, Cohen's d effect sizes)
-   enabling credible algorithm comparison.
+2. **Reproducible Comparative Experiments** — 76 multi-seed runs across both IID and
+   non-IID Dirichlet ($\alpha=0.5$) partitions with full $n=10$ paired seeds, accompanied by rigorous
+   statistical analysis (Wilcoxon signed-rank tests with tied-rank handling, Cohen's $d_z$ effect sizes,
+   and exact power analysis) enabling credible algorithm comparison.
 
-3. **An Honest Finding** — Under MNIST, both FedAvg and FedProx demonstrate surprising
-   resilience to network impairment (accuracy loss of only 0.30% from baseline to severe
-   disruption). Under CIFAR-10, degradation is far more visible (3.78% drop). The
-   difference between algorithms is small and not statistically significant on MNIST
-   (FedProx leads by 0.05% on average, Cohen's d=0.31, small effect, p=0.6875).
-   Notably, on seed 6, FedAvg actually outperformed FedProx (98.44% vs 98.34%),
-   underscoring the absence of a reliable advantage on this task. On CIFAR-10 under
-   severe disruption, FedProx achieves a more meaningful +0.88% margin (70.52% vs
-   69.64%), suggesting its proximal regularization offers greater benefit as task
-   difficulty and gradient variance increase.
+3. **An Honest Finding** — Under MNIST IID partitioning, both FedAvg and FedProx demonstrate surprising
+   resilience to network impairment (accuracy drops by only $0.24\text{ pp}$ from baseline to severe
+   disruption). Under non-IID partitioning, impairment causes substantial convergence delay ($+66\%$ to
+   $+130\%$ additional communication rounds to reach $95\%$ accuracy). However, across all 10 paired seeds,
+   the performance difference between FedAvg and FedProx is minuscule ($-0.02\text{ pp}$ to $+0.02\text{ pp}$)
+   and statistically indistinguishable ($p \ge 0.2377$), demonstrating that the proximal regularisation term
+   offers no significant advantage on this benchmark.
 
 4. **Open Infrastructure for Future Research** — The simulator is fully configurable via
-   YAML, supports custom network profiles, and can be extended to new algorithms, datasets,
-   and aggregation strategies without modifying core code.
+   YAML, supports custom network profiles, includes an automated 37-test validation suite, and can be
+   extended to new algorithms, datasets, and aggregation strategies without modifying core code.
 
 ---
 
@@ -86,7 +83,7 @@ This project contributes to a growing body of work on **context-aware machine le
 systems** — the recognition that AI systems must be evaluated in the conditions where
 they will actually be deployed, not idealised laboratory settings.
 
-The simulation framework, calibrated profiles, and experimental methodology developed
+The simulation framework, network profiles, and experimental methodology developed
 here can serve as a foundation for:
 - Future empirical FL studies targeting African deployment contexts
 - Curriculum development in African computer science programmes
