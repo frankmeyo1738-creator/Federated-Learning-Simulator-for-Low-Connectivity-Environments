@@ -28,13 +28,14 @@ import getpass
 # 1. Configuration & Execution Mode
 # ------------------------------------------------------------------------------
 # Choose mode:
-#   "all"        : Run simulations (resume-safe) + statistical analysis
+#   "missing_24" : Specifically regenerate the 24 runs (seeds 1-6 of rural & severe IID) that predate 7e7b8cf
+#   "all"        : Full 100 runs (resume-safe: skips already completed runs)
 #   "stats_only" : Skip simulation runs, immediately run statistical analysis on existing CSVs (~5s)
-#   "force_all"  : Delete existing CSVs and rerun all 76 experiments from scratch + analysis
-MODE = "all"
+#   "force_all"  : Delete existing CSVs and rerun all 100 experiments from scratch + analysis
+MODE = "missing_24"
 
 MOUNT_GOOGLE_DRIVE = True
-ENABLE_GITHUB_PUSH = False  # Set to True only when you explicitly want Colab to commit & push results to GitHub
+ENABLE_GITHUB_PUSH = True  # Set to True to push new CSVs directly to GitHub
 
 REPO_URL = "https://github.com/frankmeyo1738-creator/Federated-Learning-Simulator-for-Low-Connectivity-Environments.git"
 REPO_DIR = "/content/Federated-Learning-Simulator-for-Low-Connectivity-Environments"
@@ -61,9 +62,9 @@ if not os.path.exists(REPO_DIR):
     print(f"Cloning repository from {REPO_URL}...")
     subprocess.run(["git", "clone", REPO_URL, REPO_DIR], check=True)
 else:
-    print("Repository exists. Syncing cleanly with origin/main...")
-    subprocess.run(["git", "-C", REPO_DIR, "fetch", "origin", "main"], check=True)
+    print("Repository directory already exists. Fetching latest changes...")
     subprocess.run(["git", "-C", REPO_DIR, "reset", "--hard", "origin/main"], check=True)
+    subprocess.run(["git", "-C", REPO_DIR, "pull"], check=True)
 
 os.chdir(REPO_DIR)
 print(f"Current working directory: {os.getcwd()}")
@@ -108,11 +109,6 @@ def safe_git_push(commit_msg):
 # 5. Colab Dependencies & PyTorch GPU Check
 # ------------------------------------------------------------------------------
 print("\nVerifying dependencies...")
-# Colab already comes with PyTorch, CUDA, NumPy, Pandas, SciPy, and Matplotlib pre-installed.
-# Installing strict version pins from requirements.txt causes pip resolver backtracking.
-# We only need to ensure PyYAML is present:
-subprocess.run([sys.executable, "-m", "pip", "install", "-q", "pyyaml"], check=True)
-
 import torch
 print(f"PyTorch: {torch.__version__} | CUDA Available: {torch.cuda.is_available()}")
 if torch.cuda.is_available():
@@ -124,7 +120,7 @@ else:
     print("⚠️ WARNING: Running on CPU! For 10x faster execution, enable GPU under Runtime > Change runtime type.")
 
 # ------------------------------------------------------------------------------
-# 6. Experiment Manifest (76 Runs)
+# 6. Experiment Manifest
 # ------------------------------------------------------------------------------
 IID_DIR = "config/experiments/multiseed"
 NONIID_DIR = "config/experiments/multiseed/noniid"
@@ -134,34 +130,58 @@ RESULTS_NONIID_DIR = "experiments/results/multiseed/noniid"
 os.makedirs(RESULTS_IID_DIR, exist_ok=True)
 os.makedirs(RESULTS_NONIID_DIR, exist_ok=True)
 
-IID_FULL_RERUN = ["baseline_fedavg", "urban_zambia_fedavg"]  # Seeds 1-10
-IID_PARTIAL = ["rural_zambia_fedavg", "rural_zambia_fedprox",
-               "severe_disruption_fedavg", "severe_disruption_fedprox"]  # Seeds 7-10
-NONIID_FULL = ["rural_zambia_fedavg_noniid", "rural_zambia_fedprox_noniid",
-               "severe_disruption_fedavg_noniid", "severe_disruption_fedprox_noniid"]  # Seeds 1-10
-
 runs = []
-for cfg in IID_FULL_RERUN:
-    for seed in range(1, 11):
-        runs.append((f"{IID_DIR}/{cfg}_seed{seed}.yaml", f"{RESULTS_IID_DIR}/{cfg}_seed{seed}_metrics.csv", True, f"{cfg}_seed{seed}"))
 
-for cfg in IID_PARTIAL:
-    for seed in range(7, 11):
-        runs.append((f"{IID_DIR}/{cfg}_seed{seed}.yaml", f"{RESULTS_IID_DIR}/{cfg}_seed{seed}_metrics.csv", True, f"{cfg}_seed{seed}"))
+if MODE == "missing_24":
+    # Specifically target the 24 pre-fix rural & severe IID runs (seeds 1 to 6)
+    RERUN_24 = [
+        "rural_zambia_fedavg",
+        "rural_zambia_fedprox",
+        "severe_disruption_fedavg",
+        "severe_disruption_fedprox",
+    ]
+    for cfg in RERUN_24:
+        for seed in range(1, 7):
+            runs.append((f"{IID_DIR}/{cfg}_seed{seed}.yaml", f"{RESULTS_IID_DIR}/{cfg}_seed{seed}_metrics.csv", True, f"{cfg}_seed{seed}"))
+    print(f"\nManifest defined (MISSING_24 mode): {len(runs)} runs total.")
+    assert len(runs) == 24, f"Expected 24 runs, got {len(runs)}"
 
-for cfg in NONIID_FULL:
-    for seed in range(1, 11):
-        runs.append((f"{NONIID_DIR}/{cfg}_seed{seed}.yaml", f"{RESULTS_NONIID_DIR}/{cfg}_seed{seed}_metrics.csv", False, f"{cfg}_seed{seed}"))
-
-print(f"\nManifest defined: {len(runs)} runs total.")
-assert len(runs) == 76, f"Expected 76 runs, got {len(runs)}"
+elif MODE in ["all", "force_all"]:
+    # Full 100-run manifest across all 10 configurations (seeds 1-10)
+    IID_ALL = [
+        "baseline_fedavg",
+        "urban_zambia_fedavg",
+        "rural_zambia_fedavg",
+        "rural_zambia_fedprox",
+        "severe_disruption_fedavg",
+        "severe_disruption_fedprox",
+    ]
+    NONIID_ALL = [
+        "rural_zambia_fedavg_noniid",
+        "rural_zambia_fedprox_noniid",
+        "severe_disruption_fedavg_noniid",
+        "severe_disruption_fedprox_noniid",
+    ]
+    for cfg in IID_ALL:
+        for seed in range(1, 11):
+            runs.append((f"{IID_DIR}/{cfg}_seed{seed}.yaml", f"{RESULTS_IID_DIR}/{cfg}_seed{seed}_metrics.csv", True, f"{cfg}_seed{seed}"))
+    for cfg in NONIID_ALL:
+        for seed in range(1, 11):
+            runs.append((f"{NONIID_DIR}/{cfg}_seed{seed}.yaml", f"{RESULTS_NONIID_DIR}/{cfg}_seed{seed}_metrics.csv", False, f"{cfg}_seed{seed}"))
+    print(f"\nManifest defined (ALL 100 runs): {len(runs)} runs total.")
+    assert len(runs) == 100, f"Expected 100 runs, got {len(runs)}"
 
 # ------------------------------------------------------------------------------
 # 7. Simulation Execution Loop
 # ------------------------------------------------------------------------------
-if MODE in ["all", "force_all"]:
-    if MODE == "force_all":
-        print("⚡ FORCE_ALL selected: clearing existing output CSVs for these 76 runs...")
+if MODE in ["missing_24", "all", "force_all"]:
+    if MODE == "missing_24":
+        print("⚡ MISSING_24 selected: clearing 24 pre-fix CSVs to ensure fresh, clean post-fix generation...")
+        for _, csv_path, _, _ in runs:
+            if os.path.exists(csv_path):
+                os.remove(csv_path)
+    elif MODE == "force_all":
+        print("⚡ FORCE_ALL selected: clearing existing output CSVs for all runs...")
         for _, csv_path, _, _ in runs:
             if os.path.exists(csv_path):
                 os.remove(csv_path)
