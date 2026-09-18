@@ -28,11 +28,11 @@ import getpass
 # 1. Configuration & Execution Mode
 # ------------------------------------------------------------------------------
 # Choose mode:
-#   "missing_24" : Specifically regenerate the 24 runs (seeds 1-6 of rural & severe IID) that predate 7e7b8cf
+#   "missing_20" : Specifically regenerate the 20 runs (seeds 1-5 of rural & severe IID) that predate 7e7b8cf
 #   "all"        : Full 100 runs (resume-safe: skips already completed runs)
 #   "stats_only" : Skip simulation runs, immediately run statistical analysis on existing CSVs (~5s)
 #   "force_all"  : Delete existing CSVs and rerun all 100 experiments from scratch + analysis
-MODE = "missing_24"
+MODE = "missing_20"
 
 MOUNT_GOOGLE_DRIVE = True
 ENABLE_GITHUB_PUSH = True  # Set to True to push new CSVs directly to GitHub
@@ -132,19 +132,21 @@ os.makedirs(RESULTS_NONIID_DIR, exist_ok=True)
 
 runs = []
 
-if MODE == "missing_24":
-    # Specifically target the 24 pre-fix rural & severe IID runs (seeds 1 to 6)
-    RERUN_24 = [
+if MODE in ["missing_20", "missing_24"]:
+    # Specifically target the 20 pre-fix rural & severe IID runs (seeds 1 to 5)
+    max_seed = 6 if MODE == "missing_20" else 7  # range(1, 6) = seeds 1-5 (20 runs)
+    RERUN_TARGETS = [
         "rural_zambia_fedavg",
         "rural_zambia_fedprox",
         "severe_disruption_fedavg",
         "severe_disruption_fedprox",
     ]
-    for cfg in RERUN_24:
-        for seed in range(1, 7):
+    for cfg in RERUN_TARGETS:
+        for seed in range(1, max_seed):
             runs.append((f"{IID_DIR}/{cfg}_seed{seed}.yaml", f"{RESULTS_IID_DIR}/{cfg}_seed{seed}_metrics.csv", True, f"{cfg}_seed{seed}"))
-    print(f"\nManifest defined (MISSING_24 mode): {len(runs)} runs total.")
-    assert len(runs) == 24, f"Expected 24 runs, got {len(runs)}"
+    expected_count = 20 if MODE == "missing_20" else 24
+    print(f"\nManifest defined ({MODE} mode): {len(runs)} runs total.")
+    assert len(runs) == expected_count, f"Expected {expected_count} runs, got {len(runs)}"
 
 elif MODE in ["all", "force_all"]:
     # Full 100-run manifest across all 10 configurations (seeds 1-10)
@@ -174,9 +176,9 @@ elif MODE in ["all", "force_all"]:
 # ------------------------------------------------------------------------------
 # 7. Simulation Execution Loop
 # ------------------------------------------------------------------------------
-if MODE in ["missing_24", "all", "force_all"]:
-    if MODE == "missing_24":
-        print("⚡ MISSING_24 selected: clearing 24 pre-fix CSVs to ensure fresh, clean post-fix generation...")
+if MODE in ["missing_20", "missing_24", "all", "force_all"]:
+    if MODE in ["missing_20", "missing_24"]:
+        print(f"⚡ {MODE.upper()} selected: clearing pre-fix CSVs to ensure fresh, clean post-fix generation...")
         for _, csv_path, _, _ in runs:
             if os.path.exists(csv_path):
                 os.remove(csv_path)
