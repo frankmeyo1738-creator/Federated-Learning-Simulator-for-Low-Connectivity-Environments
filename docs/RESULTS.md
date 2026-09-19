@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarises the empirical results produced by the Federated Learning Network Simulator across 76 multi-seed experiments (full $n=10$ cohort for both IID and non-IID data distributions), as well as exploratory CIFAR-10 single-seed benchmarks across four Sub-Saharan Africa (SSA) network profiles.
+This document summarises the empirical results produced by the Federated Learning Network Simulator across 100 multi-seed experiments (full $n=10$ cohort for both IID and non-IID data distributions), as well as exploratory CIFAR-10 single-seed benchmarks across four Sub-Saharan Africa (SSA) network profiles.
 
 All multi-seed results reported here reflect the post-seeding remediation (commit `7e7b8cf` and later), sample standard deviations computed with Bessel's correction ($\text{ddof}=1$), exact asymptotic Wilcoxon signed-rank tests with tied-rank splitting (`zero_method='zsplit'`, `mode='approx'`), paired Cohen's $d_z$ effect sizes with 95% bootstrap confidence intervals, statistical power calculations via the non-central $t$-distribution, genuine binary mebibyte data accounting ($1024^2$ bytes per MiB), and discriminating convergence threshold rounds ($R_{90}$ and $R_{95}$).
 
@@ -20,12 +20,12 @@ All multi-seed results reported here reflect the post-seeding remediation (commi
    * Heterogeneous local data distributions coupled with heavy client dropouts starve the server of diverse class updates, slowing parameter trajectory progression along the optimization landscape.
 
 2. **Does FedProx offer measurable robustness gains over FedAvg under connectivity constraints?**
-   * Across all 10 paired random seeds, FedProx shows **no statistically significant difference** in final test accuracy compared to FedAvg under any evaluated network condition:
-     * Rural Zambia (IID): Mean difference $+0.01\text{ pp}$, Wilcoxon $W = 26.0, p = 0.8782, d_z = 0.10$
-     * Severe Disruption (IID): Mean difference $+0.02\text{ pp}$, Wilcoxon $W = 25.5, p = 0.8383, d_z = 0.17$
+   * Under most network conditions, FedProx shows **no statistically significant difference** in final test accuracy compared to FedAvg. However, under Severe Disruption (IID), a statistically significant difference emerged, though its practical magnitude is negligible:
+     * Rural Zambia (IID): Mean difference $-0.01\text{ pp}$, Wilcoxon $W = 17.5, p = 0.3074, d_z = -0.38$
+     * Severe Disruption (IID): Mean difference $-0.04\text{ pp}$, Wilcoxon $W = 1.5, p = 0.0078, d_z = -0.78$ (**Statistically Significant**)
      * Rural Zambia (Non-IID): Mean difference $-0.02\text{ pp}$, Wilcoxon $W = 16.0, p = 0.2377, d_z = -0.34$
      * Severe Disruption (Non-IID): Mean difference $+0.01\text{ pp}$, Wilcoxon $W = 27.0, p = 0.9593, d_z = 0.11$
-   * All $p$-values are substantially above the significance threshold ($\alpha = 0.05$). Observed statistical power ranges from $6.0\%$ to $16.1\%$, reflecting that any true performance difference between FedAvg and FedProx on MNIST under these drop rates is smaller than our minimum detectable effect size ($\text{MDE} = 1.00$ at $n=10, 80\%$ power). The proximal regularisation term ($\mu=0.01$) neither significantly enhances nor impairs terminal performance.
+   * The significant result under Severe Disruption (IID) illustrates the critical distinction between statistical and practical significance. While the consistency of the difference across seeds ($p=0.0078$) makes it statistically significant, the actual performance gap is merely $0.04\text{ pp}$ ($98.34\%$ vs $98.31\%$), which is practically negligible for real-world deployments. A clean, fully IID cohort tightened the standard deviations sufficiently to allow this consistent but tiny margin to cross the significance threshold. Overall, the proximal regularisation term ($\mu=0.01$) does not provide a large, transformative accuracy improvement over FedAvg on this benchmark under these conditions.
 
 3. **How does network degradation affect communication cost?**
    * Total payload successfully delivered to the server scales downwards with client dropout rates:
@@ -72,7 +72,7 @@ To guarantee scientific reproducibility across all comparisons:
 
 ## Multi-Seed Results — Full $n=10$ Cohort
 
-Aggregated across 10 random seeds (seeds 1 to 10) per configuration (76 total experiment runs). All metric uncertainties represent sample standard deviations with Bessel's correction ($\text{ddof}=1$).
+Aggregated across 10 random seeds (seeds 1 to 10) per configuration (100 total experiment runs). All metric uncertainties represent sample standard deviations with Bessel's correction ($\text{ddof}=1$).
 
 ### Table 1: IID Cohort Summary (60 Experiments, 10 Seeds Each)
 
@@ -80,10 +80,10 @@ Aggregated across 10 random seeds (seeds 1 to 10) per configuration (76 total ex
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | `baseline_fedavg` | 10 | **98.52 ± 0.05%** | [98.45%, 98.58%] | 0.0446 ± 0.0024 | 0.00 ± 0.00% | 457.7 ± 0.0 MiB | 1.0 / 4.0 |
 | `urban_zambia_fedavg` | 10 | **98.52 ± 0.08%** | [98.33%, 98.63%] | 0.0443 ± 0.0031 | 5.60 ± 3.03% | 432.1 ± 13.8 MiB | 1.0 / 3.9 |
-| `rural_zambia_fedavg` | 10 | **98.44 ± 0.05%** | [98.34%, 98.51%] | 0.0469 ± 0.0025 | 30.20 ± 7.10% | 319.5 ± 32.5 MiB | 1.2 / 4.4 |
-| `severe_disruption_fedavg` | 10 | **98.28 ± 0.16%** | [97.97%, 98.45%] | 0.0516 ± 0.0061 | 59.80 ± 5.43% | 184.0 ± 24.9 MiB | 1.1 / 4.5 |
-| `rural_zambia_fedprox` | 10 | **98.45 ± 0.10%** | [98.23%, 98.60%] | 0.0471 ± 0.0036 | 30.20 ± 7.10% | 319.5 ± 32.5 MiB | 1.2 / 4.4 |
-| `severe_disruption_fedprox` | 10 | **98.30 ± 0.07%** | [98.22%, 98.42%] | 0.0517 ± 0.0028 | 59.80 ± 5.43% | 184.0 ± 24.9 MiB | 1.2 / 4.7 |
+| `rural_zambia_fedavg` | 10 | **98.48 ± 0.09%** | [98.32%, 98.64%] | 0.0458 ± 0.0028 | 30.20 ± 7.10% | 319.5 ± 32.5 MiB | 1.1 / 4.0 |
+| `severe_disruption_fedavg` | 10 | **98.34 ± 0.05%** | [98.26%, 98.44%] | 0.0503 ± 0.0022 | 59.80 ± 5.43% | 184.0 ± 24.9 MiB | 1.1 / 4.7 |
+| `rural_zambia_fedprox` | 10 | **98.46 ± 0.08%** | [98.36%, 98.61%] | 0.0462 ± 0.0026 | 30.20 ± 7.10% | 319.5 ± 32.5 MiB | 1.1 / 4.1 |
+| `severe_disruption_fedprox` | 10 | **98.31 ± 0.06%** | [98.19%, 98.37%] | 0.0510 ± 0.0023 | 59.80 ± 5.43% | 184.0 ± 24.9 MiB | 1.2 / 4.7 |
 
 ### Table 2: Non-IID Cohort Summary (40 Experiments, Dirichlet $\alpha=0.5$, 10 Seeds Each)
 
@@ -104,12 +104,12 @@ Significance was assessed via paired two-sided Wilcoxon signed-rank tests using 
 
 | Comparison Scenario | Data Partition | Mean FedAvg Acc (%) | Mean FedProx Acc (%) | Mean Diff (pp) | Wilcoxon $W$ | Asymptotic $p$-value | Cohen's $d_z$ [95% CI] | Statistical Power ($1-\beta$) | Statistically Significant? |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Rural Zambia** | IID | 98.44% | 98.45% | +0.01 pp | 26.0 | **p = 0.8782** | 0.10 [-0.75, 0.66] | 6.0% | **No** ($p \ge 0.05$) |
-| **Severe Disruption** | IID | 98.28% | 98.30% | +0.02 pp | 25.5 | **p = 0.8383** | 0.17 [-0.98, 0.68] | 7.6% | **No** ($p \ge 0.05$) |
+| **Rural Zambia** | IID | 98.48% | 98.46% | -0.01 pp | 17.5 | **p = 0.3074** | -0.38 [-1.61, 0.19] | 19.1% | **No** ($p \ge 0.05$) |
+| **Severe Disruption** | IID | 98.34% | 98.31% | -0.04 pp | 1.5 | **p = 0.0078** | -0.78 [-1.34, -0.55] | 59.9% | **Yes** ($p < 0.05$) |
 | **Rural Zambia** | Non-IID | 97.74% | 97.72% | -0.02 pp | 16.0 | **p = 0.2377** | -0.34 [-3.64, 0.22] | 16.1% | **No** ($p \ge 0.05$) |
 | **Severe Disruption** | Non-IID | 97.29% | 97.30% | +0.01 pp | 27.0 | **p = 0.9593** | 0.11 [-0.75, 0.70] | 6.2% | **No** ($p \ge 0.05$) |
 
-*Note on Statistical Power:* For a paired sample size of $n=10$ at $\alpha=0.05$, achieving standard $80\%$ statistical power requires an effect size of $|d| \ge 1.00$ (a large effect). Because the true performance differences on MNIST between FedAvg and FedProx are subtle ($|d_z| \le 0.34$), the tests exhibit low statistical power. This demonstrates conclusively that FedProx does not provide a large, transformative accuracy improvement over FedAvg on this benchmark under these conditions.
+*Note on Statistical Power:* For a paired sample size of $n=10$ at $\alpha=0.05$, achieving standard $80\%$ statistical power requires an effect size of $|d| \ge 1.00$ (a large effect). While a statistically significant difference was found in Severe Disruption (IID) due to highly consistent pairing, the absolute magnitude of this difference ($0.04\text{ pp}$) is practically negligible. Because the true performance differences on MNIST between FedAvg and FedProx are subtle ($|d_z| \le 0.78$), the tests exhibit low statistical power. This demonstrates conclusively that FedProx does not provide a large, transformative accuracy improvement over FedAvg on this benchmark under these conditions.
 
 ---
 
@@ -159,7 +159,7 @@ pytest tests/unit/ -v
 # Run scripts/colab_runner.py in Google Colab with T4 GPU runtime
 ```
 
-All 76 raw CSV result files are version-controlled in `experiments/results/multiseed/`.
+All 100 raw CSV result files are version-controlled in `experiments/results/multiseed/`.
 
 ---
 
