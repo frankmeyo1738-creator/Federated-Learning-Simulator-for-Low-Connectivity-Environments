@@ -1,6 +1,6 @@
 =================================================================================================================================================
 FL NETWORK SIMULATOR — MULTI-SEED STATISTICAL SUMMARY (n=10 COHORT)
-SciPy Version: 1.16.3 (Pinned) | NumPy Version: 2.1.3 | Cohort Size: n=10
+SciPy Version: 1.13.1 (Pinned) | NumPy Version: 2.0.2 | Cohort Size: n=10
 Methodology: Sample SD (ddof=1), Wilcoxon Signed-Rank (zero_method='zsplit', two-sided, mode='approx'), paired Cohen's d (dz)
 MiB Conversion: bytes / 1048576 (1024², genuine binary mebibyte)
 =================================================================================================================================================
@@ -40,6 +40,7 @@ Comparison: Rural Zambia (IID) (FedAvg vs FedProx)
   - Asymptotic p:     p = 0.3074
   - Paired Cohen's d: d_z = -0.38 [95% CI: -1.61, 0.19]
   - Statistical Power: 19.1% (at observed effect size |d|=0.38)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 
 Comparison: Severe Disruption (IID) (FedAvg vs FedProx)
@@ -51,6 +52,7 @@ Comparison: Severe Disruption (IID) (FedAvg vs FedProx)
   - Asymptotic p:     p = 0.0078
   - Paired Cohen's d: d_z = -0.78 [95% CI: -1.34, -0.55]
   - Statistical Power: 59.9% (at observed effect size |d|=0.78)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
   -> Significance:    STATISTICALLY SIGNIFICANT difference (p < 0.05)
 
 [B] Non-IID Network Scenarios:
@@ -64,6 +66,7 @@ Comparison: Rural Zambia (Non-IID) (FedAvg vs FedProx)
   - Asymptotic p:     p = 0.2377
   - Paired Cohen's d: d_z = -0.34 [95% CI: -3.64, 0.22]
   - Statistical Power: 16.1% (at observed effect size |d|=0.34)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 
 Comparison: Severe Disruption (Non-IID) (FedAvg vs FedProx)
@@ -75,5 +78,6 @@ Comparison: Severe Disruption (Non-IID) (FedAvg vs FedProx)
   - Asymptotic p:     p = 0.9593
   - Paired Cohen's d: d_z = 0.11 [95% CI: -0.75, 0.70]
   - Statistical Power: 6.2% (at observed effect size |d|=0.11)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 
