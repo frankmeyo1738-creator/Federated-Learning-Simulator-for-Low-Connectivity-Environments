@@ -11,20 +11,20 @@ All multi-seed results reported here reflect the post-seeding remediation (commi
 ## Research Questions & Findings Summary
 
 1. **How does SSA-style network impairment affect federated learning convergence?**
-   * Under **IID partitioning**, final global accuracy exhibits remarkable resilience across 10 communication rounds: baseline accuracy of **$98.52\% \pm 0.05\%$** degrades only slightly to **$98.44\% \pm 0.05\%$** under Rural Zambia conditions ($30.20\%$ drop rate) and **$98.28\% \pm 0.16\%$** under Severe Disruption ($59.80\%$ drop rate).
+   * Under **IID partitioning**, final global accuracy exhibits remarkable resilience across 10 communication rounds: baseline accuracy of **$98.52\% \pm 0.05\%$** degrades only slightly to **$98.48\% \pm 0.09\%$** under Rural Zambia conditions ($30.20\%$ drop rate) and **$98.34\% \pm 0.05\%$** under Severe Disruption ($59.80\%$ drop rate) — a degradation of only $0.18\text{ pp}$.
    * However, when network impairment is compounded with **non-IID Dirichlet heterogeneity ($\alpha=0.5$)**, the true impact manifests as **substantial convergence delay** rather than terminal accuracy failure. Reaching $95\%$ test accuracy requires:
      * **4.0 rounds** under Baseline (zero impairment)
-     * **4.4 rounds** under Rural Zambia (IID)
+     * **4.0 rounds** under Rural Zambia (IID FedAvg; 4.1 rounds for FedProx)
      * **7.3 rounds** under Rural Zambia (Non-IID) — a **$66\%$ delay**
      * **10.1–10.3 rounds** under Severe Disruption (Non-IID) — a **$130\%$ delay**, with final round accuracy reaching only $97.29\% \pm 0.77\%$.
    * Heterogeneous local data distributions coupled with heavy client dropouts starve the server of diverse class updates, slowing parameter trajectory progression along the optimization landscape.
 
 2. **Does FedProx offer measurable robustness gains over FedAvg under connectivity constraints?**
    * Under most network conditions, FedProx shows **no statistically significant difference** in final test accuracy compared to FedAvg. However, under Severe Disruption (IID), a statistically significant difference emerged, though its practical magnitude is negligible:
-     * Rural Zambia (IID): Mean difference $-0.01\text{ pp}$, Wilcoxon $W = 17.5, p = 0.3074, d_z = -0.38$
-     * Severe Disruption (IID): Mean difference $-0.04\text{ pp}$, Wilcoxon $W = 1.5, p = 0.0078, d_z = -0.78$ (**Statistically Significant**)
-     * Rural Zambia (Non-IID): Mean difference $-0.02\text{ pp}$, Wilcoxon $W = 16.0, p = 0.2377, d_z = -0.34$
-     * Severe Disruption (Non-IID): Mean difference $+0.01\text{ pp}$, Wilcoxon $W = 27.0, p = 0.9593, d_z = 0.11$
+     * Rural Zambia (IID): Mean difference $-0.02\text{ pp}$ ($98.46\% \text{ vs } 98.48\%$; raw diff $-0.013\text{ pp}$), Wilcoxon $W = 17.5, p = 0.3074, d_z = -0.38$
+     * Severe Disruption (IID): Mean difference $-0.04\text{ pp}$ ($98.31\% \text{ vs } 98.34\%$; raw diff $-0.038\text{ pp}$), Wilcoxon $W = 1.5, p = 0.0078, d_z = -0.78$ (**Statistically Significant**)
+     * Rural Zambia (Non-IID): Mean difference $-0.02\text{ pp}$ ($97.72\% \text{ vs } 97.74\%$), Wilcoxon $W = 16.0, p = 0.2377, d_z = -0.34$
+     * Severe Disruption (Non-IID): Mean difference $+0.01\text{ pp}$ ($97.30\% \text{ vs } 97.29\%$), Wilcoxon $W = 27.0, p = 0.9593, d_z = 0.11$
    * The significant result under Severe Disruption (IID) illustrates the critical distinction between statistical and practical significance. While the consistency of the difference across seeds ($p=0.0078$) makes it statistically significant, the actual performance gap is merely $0.04\text{ pp}$ ($98.34\%$ vs $98.31\%$), which is practically negligible for real-world deployments. A clean, fully IID cohort tightened the standard deviations sufficiently to allow this consistent but tiny margin to cross the significance threshold. Overall, the proximal regularisation term ($\mu=0.01$) does not provide a large, transformative accuracy improvement over FedAvg on this benchmark under these conditions.
 
 3. **How does network degradation affect communication cost?**
@@ -104,7 +104,7 @@ Significance was assessed via paired two-sided Wilcoxon signed-rank tests using 
 
 | Comparison Scenario | Data Partition | Mean FedAvg Acc (%) | Mean FedProx Acc (%) | Mean Diff (pp) | Wilcoxon $W$ | Asymptotic $p$-value | Cohen's $d_z$ [95% CI] | Statistical Power ($1-\beta$) | Statistically Significant? |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Rural Zambia** | IID | 98.48% | 98.46% | -0.01 pp | 17.5 | **p = 0.3074** | -0.38 [-1.61, 0.19] | 19.1% | **No** ($p \ge 0.05$) |
+| **Rural Zambia** | IID | 98.48% | 98.46% | -0.02 pp | 17.5 | **p = 0.3074** | -0.38 [-1.61, 0.19] | 19.1% | **No** ($p \ge 0.05$) |
 | **Severe Disruption** | IID | 98.34% | 98.31% | -0.04 pp | 1.5 | **p = 0.0078** | -0.78 [-1.34, -0.55] | 59.9% | **Yes** ($p < 0.05$) |
 | **Rural Zambia** | Non-IID | 97.74% | 97.72% | -0.02 pp | 16.0 | **p = 0.2377** | -0.34 [-3.64, 0.22] | 16.1% | **No** ($p \ge 0.05$) |
 | **Severe Disruption** | Non-IID | 97.29% | 97.30% | +0.01 pp | 27.0 | **p = 0.9593** | 0.11 [-0.75, 0.70] | 6.2% | **No** ($p \ge 0.05$) |
