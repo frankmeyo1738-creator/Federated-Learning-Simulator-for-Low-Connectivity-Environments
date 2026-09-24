@@ -65,11 +65,9 @@ python3 scripts/statistical_analysis.py
 
 ## Experiment Results — Multi-Seed $n=10$ Cohort
 
-Comprehensive evaluation across **76 total experiment runs** ($n=10$ paired random seeds 1–10 across both IID and non-IID Dirichlet $\alpha=0.5$ partitions). All uncertainties represent sample standard deviations ($\text{ddof}=1$), data volumes are reported in binary mebibytes ($1024^2$ B), and accuracy differences in percentage points (pp).
+Comprehensive evaluation across **100 total experiment runs** ($n=10$ paired random seeds 1–10 across both IID and non-IID Dirichlet $\alpha=0.5$ partitions). All uncertainties represent sample standard deviations ($\text{ddof}=1$), data volumes are reported in binary mebibytes ($1024^2$ B), and accuracy differences in percentage points (pp).
 
-### 1. IID Network Scenarios (MNIST, 10 rounds)
-
-### 1. IID Network Scenarios (MNIST, 10 rounds)
+### 1. IID Network Scenarios (MNIST, 20 rounds)
 
 | Experiment | Final Accuracy (%) | Final Loss | Drop Rate (%) | Delivered (MiB) |
 |------------|-------------------|------------|---------------|-----------------|
@@ -80,7 +78,7 @@ Comprehensive evaluation across **76 total experiment runs** ($n=10$ paired rand
 | Severe Disruption FedAvg | $98.34 \pm 0.05$ | $0.0503 \pm 0.0022$ | $59.80 \pm 5.43$ | $184.0 \pm 24.9$ |
 | Severe Disruption FedProx | $98.31 \pm 0.06$ | $0.0510 \pm 0.0023$ | $59.80 \pm 5.43$ | $184.0 \pm 24.9$ |
 
-### 2. Non-IID Dirichlet ($\alpha=0.5$) Scenarios (MNIST, 10 rounds)
+### 2. Non-IID Dirichlet ($\alpha=0.5$) Scenarios (MNIST, 20 rounds)
 
 | Experiment | Final Accuracy (%) | Final Loss | Drop Rate (%) | Delivered (MiB) |
 |------------|-------------------|------------|---------------|-----------------|
