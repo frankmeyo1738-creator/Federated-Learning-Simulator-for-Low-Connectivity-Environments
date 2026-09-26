@@ -56,7 +56,7 @@ Four network profiles model realistic mobile communication regimes in Sub-Sahara
 ### Profile Assumptions & Disclosures
 
 - **Implementation vs Proposal:** Nominal proposal parameters were formulated as unbounded Gaussians, whereas `src/network/impairment.py` enforces explicit bounded intervals $[\text{min}, \text{max}]$ with midpoint $\mu = \frac{\text{min}+\text{max}}{2}$ and $\sigma = 0.15 \times (\text{max}-\text{min})$, truncating symmetrically at $\pm 3.33\sigma$.
-- **Bandwidth & Packet Loss Drift:** As disclosed in the supervisor review ledger, minor parameter drift exists between early proposal sketches and the committed YAML configurations (e.g. Urban 8.5 Mbps vs 5.0 Mbps; packet loss 1% vs 2%). These configurations reflect the concrete profiles committed in `config/experiments/` from repository inception.
+- **Bandwidth & Packet Loss Drift:** As disclosed in the supervisor review ledger, minor parameter drift exists between early proposal sketches and the committed YAML configurations. The committed configs are the ground truth used in all experiments: Urban Zambia uses 8.5 Mbps bandwidth and 1% packet loss (the early proposal sketch noted 5.0 Mbps and 2%). All results derive from the committed YAML values in `config/experiments/`.
 
 ---
 
