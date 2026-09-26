@@ -41,7 +41,7 @@ No existing open-source simulator answers these questions with SSA-inspired, emp
 2. **Reproducible Comparative Experiments** — 100 multi-seed runs (n=10 paired seeds across 10 configurations) across both IID and
    non-IID Dirichlet ($\alpha=0.5$) partitions, accompanied by rigorous
    statistical analysis (Wilcoxon signed-rank tests with tied-rank handling, Cohen's $d_z$ effect sizes,
-   and exact power analysis) enabling credible algorithm comparison.
+   and post-hoc statistical power analysis via non-central $t$-distribution approximation) enabling credible algorithm comparison.
 
 3. **An Honest Finding** — Under MNIST IID partitioning, both FedAvg and FedProx demonstrate surprising
    resilience to network impairment (terminal accuracy degrades by only $0.18\text{ pp}$ from baseline to

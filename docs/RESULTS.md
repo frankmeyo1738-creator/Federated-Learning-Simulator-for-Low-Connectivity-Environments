@@ -12,11 +12,11 @@ All multi-seed results reported here reflect the post-seeding remediation (commi
 
 1. **How does SSA-style network impairment affect federated learning convergence?**
    * Under **IID partitioning**, final global accuracy exhibits remarkable resilience across 20 communication rounds: baseline accuracy of **$98.52\% \pm 0.05\%$** degrades only slightly to **$98.48\% \pm 0.09\%$** under Rural Zambia conditions ($30.20\%$ drop rate) and **$98.34\% \pm 0.05\%$** under Severe Disruption ($59.80\%$ drop rate) — a degradation of only $0.18\text{ pp}$.
-   * However, when network impairment is compounded with **non-IID Dirichlet heterogeneity ($\alpha=0.5$)**, the true impact manifests as **substantial convergence delay** rather than terminal accuracy failure. Reaching $95\%$ test accuracy requires:
-     * **4.0 rounds** under Baseline (zero impairment)
-     * **4.0 rounds** under Rural Zambia (IID FedAvg; 4.1 rounds for FedProx)
-     * **7.3 rounds** under Rural Zambia (Non-IID) — a **$83\%$ delay**
-     * **10.1–10.3 rounds** under Severe Disruption (Non-IID) — a **$153\%$ delay**, with final round accuracy reaching only $97.29\% \pm 0.77\%$.
+   * However, when network impairment is compounded with **non-IID Dirichlet heterogeneity ($\alpha=0.5$)**, the true impact manifests as **substantial convergence delay** rather than terminal accuracy failure. Rounds-to-95% accuracy, with IID results as reference baselines:
+     * **4.0 rounds** — IID Baseline (zero impairment; IID multi-seed cohort)
+     * **4.0 rounds** — IID Rural Zambia FedAvg (4.1 rounds for FedProx; IID multi-seed cohort)
+     * **7.3 rounds** — Non-IID Rural Zambia (Dirichlet $\alpha=0.5$) — **+83% delay** over IID Baseline
+     * **10.1–10.3 rounds** — Non-IID Severe Disruption (Dirichlet $\alpha=0.5$) — **+153% delay** over IID Baseline; final accuracy $97.29\% \pm 0.77\%$
    * Heterogeneous local data distributions coupled with heavy client dropouts starve the server of diverse class updates, slowing parameter trajectory progression along the optimization landscape.
 
 2. **Does FedProx offer measurable robustness gains over FedAvg under connectivity constraints?**
