@@ -38,18 +38,20 @@ No existing open-source simulator answers these questions with SSA-inspired, emp
    mobile connectivity data for Sub-Saharan Africa, covering urban, rural, and severely
    disrupted connectivity scenarios specific to the region.
 
-2. **Reproducible Comparative Experiments** — 76 multi-seed runs across both IID and
-   non-IID Dirichlet ($\alpha=0.5$) partitions with full $n=10$ paired seeds, accompanied by rigorous
+2. **Reproducible Comparative Experiments** — 100 multi-seed runs (n=10 paired seeds across 10 configurations) across both IID and
+   non-IID Dirichlet ($\alpha=0.5$) partitions, accompanied by rigorous
    statistical analysis (Wilcoxon signed-rank tests with tied-rank handling, Cohen's $d_z$ effect sizes,
    and exact power analysis) enabling credible algorithm comparison.
 
 3. **An Honest Finding** — Under MNIST IID partitioning, both FedAvg and FedProx demonstrate surprising
-   resilience to network impairment (accuracy drops by only $0.24\text{ pp}$ from baseline to severe
-   disruption). Under non-IID partitioning, impairment causes substantial convergence delay ($+66\%$ to
-   $+130\%$ additional communication rounds to reach $95\%$ accuracy). However, across all 10 paired seeds,
-   the performance difference between FedAvg and FedProx is minuscule ($-0.02\text{ pp}$ to $+0.02\text{ pp}$)
-   and statistically indistinguishable ($p \ge 0.2377$), demonstrating that the proximal regularisation term
-   offers no significant advantage on this benchmark.
+   resilience to network impairment (terminal accuracy degrades by only $0.18\text{ pp}$ from baseline to
+   severe disruption, despite 60% client dropout). Under non-IID partitioning, impairment causes substantial
+   convergence delay ($+83\%$ to $+153\%$ additional communication rounds to reach $95\%$ accuracy).
+   The performance difference between FedAvg and FedProx is operationally negligible across all profiles
+   ($-0.04\text{ pp}$ to $+0.01\text{ pp}$): three of four paired comparisons show no statistically
+   significant difference ($p \ge 0.2377$), while the Severe Disruption IID comparison reaches
+   statistical significance ($p = 0.0078$) at a margin of $0.04\text{ pp}$ — illustrating the classic
+   divergence between statistical and practical significance on a simple benchmark task.
 
 4. **Open Infrastructure for Future Research** — The simulator is fully configurable via
    YAML, supports custom network profiles, includes an automated 37-test validation suite, and can be
