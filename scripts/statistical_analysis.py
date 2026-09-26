@@ -1,7 +1,7 @@
 """
 Statistical Analysis of Multi-Seed Experiments (n=10 Cohort)
 =============================================================
-Aggregates metrics across 10 seeds for the full IID and non-IID cohorts (76 experiments).
+Aggregates metrics across 10 seeds for the full IID and non-IID cohorts (100 runs total: 60 IID + 40 non-IID).
 Performs:
   - Non-parametric Wilcoxon signed-rank tests (paired, zero_method='zsplit', two-sided,
     mode='approx').  The mode is set explicitly to the normal approximation so the

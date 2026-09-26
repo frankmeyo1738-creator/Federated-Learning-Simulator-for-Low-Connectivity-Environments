@@ -39,10 +39,10 @@ This document provides a transparent, accountable record of AI tool usage throug
 ### Period C: $n=10$ Cohort Scaling & Colab GPU Pipeline (Mid-September 2026)
 * **Tasks Assisted:** Constructing a resume-safe Google Colab execution pipeline with automated Google Drive checkpointing, non-crashing Git push error handlers, and cuDNN determinism flags.
 * **Affected Files & Commits:**
-  * [`scripts/colab_runner.py`](file:///scripts/colab_runner.py) (Commits `42e71e2`, `f5b271e`): Created full 76-experiment runner for Colab T4 GPU.
-  * Output CSVs (Commit `47c59e7`): Completed all 76 runs (60 IID + 40 Non-IID Dirichlet $\alpha=0.5$).
+  * [`scripts/colab_runner.py`](file:///scripts/colab_runner.py) (Commits `42e71e2`, `f5b271e`): Created the Colab T4 GPU execution pipeline; the runner was initially scoped to 76 experiments during construction, with the final cohort reaching **100 runs** (60 IID + 40 non-IID, n=10 seeds across all configurations).
+  * Output CSVs (Commit `47c59e7`): Completed all **100 runs** — 60 IID (10 seeds × 6 configurations) and 40 Non-IID Dirichlet $\alpha=0.5$ (10 seeds × 4 configurations).
 * **My Personal Verification:**
-  * When the initial Colab run was interrupted by quota limits at 50/76, I personally inspected the saved Google Drive CSV files.
+  * When the initial Colab run was interrupted by quota limits at run 50 of the original 76-experiment scope, I personally inspected the saved Google Drive CSV files.
   * I confirmed that the resume logic successfully picked up from run 51 without repeating finished runs.
   * I verified every log file to confirm that `iid=True` and `iid=False` matched the experiment design.
 

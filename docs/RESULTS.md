@@ -4,7 +4,7 @@
 
 This document summarises the empirical results produced by the Federated Learning Network Simulator across 100 multi-seed experiments (full $n=10$ cohort for both IID and non-IID data distributions), as well as exploratory CIFAR-10 single-seed benchmarks across four Sub-Saharan Africa (SSA) network profiles.
 
-All multi-seed results reported here reflect the post-seeding remediation (commit `7e7b8cf` and later), sample standard deviations computed with Bessel's correction ($\text{ddof}=1$), exact asymptotic Wilcoxon signed-rank tests with tied-rank splitting (`zero_method='zsplit'`, `mode='approx'`), paired Cohen's $d_z$ effect sizes with 95% bootstrap confidence intervals, statistical power calculations via the non-central $t$-distribution, genuine binary mebibyte data accounting ($1024^2$ bytes per MiB), and discriminating convergence threshold rounds ($R_{90}$ and $R_{95}$).
+All multi-seed results reported here reflect the post-seeding remediation (commit `7e7b8cf` and later), sample standard deviations computed with Bessel's correction ($\text{ddof}=1$), asymptotic Wilcoxon signed-rank tests with tied-rank splitting (`zero_method='zsplit'`, `mode='approx'`; four exploratory paired comparisons, no multiplicity adjustment applied), paired Cohen's $d_z$ effect sizes with 95% bootstrap confidence intervals, statistical power calculations via the non-central $t$-distribution, genuine binary mebibyte data accounting ($1024^2$ bytes per MiB), and discriminating convergence threshold rounds ($R_{90}$ and $R_{95}$).
 
 ---
 
@@ -120,7 +120,7 @@ While final accuracy at round 10 remains close across algorithms, examining traj
 1. **Threshold Dynamics ($R_{90}$ and $R_{95}$):**
    * Baseline models reach $90\%$ test accuracy in **1.0 round** and $95\%$ accuracy in **4.0 rounds**.
    * Under IID Rural network conditions, convergence to $95\%$ requires **4.4 rounds**.
-   * Under Non-IID Dirichlet partitioning ($\alpha=0.5$), Rural Zambia requires **7.3 rounds** ($+66\%$ delay), and Severe Disruption requires **10.1 to 10.3 rounds** ($+130\%$ delay).
+   * Under Non-IID Dirichlet partitioning ($\alpha=0.5$), Rural Zambia requires **7.3 rounds** ($+83\%$ delay), and Severe Disruption requires **10.1 to 10.3 rounds** ($+153\%$ delay).
    * **Takeaway:** In real-world cellular deployments, data heterogeneity combined with frequent client dropouts dramatically extends the number of communication rounds needed to achieve acceptable operational accuracy.
 
 2. **Terminal Stability vs Client Drift:**
