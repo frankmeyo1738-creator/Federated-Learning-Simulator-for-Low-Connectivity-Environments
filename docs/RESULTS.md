@@ -11,12 +11,12 @@ All multi-seed results reported here reflect the post-seeding remediation (commi
 ## Research Questions & Findings Summary
 
 1. **How does SSA-style network impairment affect federated learning convergence?**
-   * Under **IID partitioning**, final global accuracy exhibits remarkable resilience across 10 communication rounds: baseline accuracy of **$98.52\% \pm 0.05\%$** degrades only slightly to **$98.48\% \pm 0.09\%$** under Rural Zambia conditions ($30.20\%$ drop rate) and **$98.34\% \pm 0.05\%$** under Severe Disruption ($59.80\%$ drop rate) — a degradation of only $0.18\text{ pp}$.
+   * Under **IID partitioning**, final global accuracy exhibits remarkable resilience across 20 communication rounds: baseline accuracy of **$98.52\% \pm 0.05\%$** degrades only slightly to **$98.48\% \pm 0.09\%$** under Rural Zambia conditions ($30.20\%$ drop rate) and **$98.34\% \pm 0.05\%$** under Severe Disruption ($59.80\%$ drop rate) — a degradation of only $0.18\text{ pp}$.
    * However, when network impairment is compounded with **non-IID Dirichlet heterogeneity ($\alpha=0.5$)**, the true impact manifests as **substantial convergence delay** rather than terminal accuracy failure. Reaching $95\%$ test accuracy requires:
      * **4.0 rounds** under Baseline (zero impairment)
      * **4.0 rounds** under Rural Zambia (IID FedAvg; 4.1 rounds for FedProx)
-     * **7.3 rounds** under Rural Zambia (Non-IID) — a **$66\%$ delay**
-     * **10.1–10.3 rounds** under Severe Disruption (Non-IID) — a **$130\%$ delay**, with final round accuracy reaching only $97.29\% \pm 0.77\%$.
+     * **7.3 rounds** under Rural Zambia (Non-IID) — a **$83\%$ delay**
+     * **10.1–10.3 rounds** under Severe Disruption (Non-IID) — a **$153\%$ delay**, with final round accuracy reaching only $97.29\% \pm 0.77\%$.
    * Heterogeneous local data distributions coupled with heavy client dropouts starve the server of diverse class updates, slowing parameter trajectory progression along the optimization landscape.
 
 2. **Does FedProx offer measurable robustness gains over FedAvg under connectivity constraints?**
@@ -53,7 +53,7 @@ Four network profiles model realistic mobile communication regimes in Sub-Sahara
 | **Rural Zambia** | 300–800 ms | 1.2 Mbps | 7% | 15% | 3G/EDGE rural cellular with fading |
 | **Severe Disruption** | 800–2000 ms | 0.3 Mbps | 20% | 35% | 2G / backhaul congestion / load-shedding |
 
-### Calibration & Profile Disclosures
+### Profile Assumptions & Disclosures
 
 - **Implementation vs Proposal:** Nominal proposal parameters were formulated as unbounded Gaussians, whereas `src/network/impairment.py` enforces explicit bounded intervals $[\text{min}, \text{max}]$ with midpoint $\mu = \frac{\text{min}+\text{max}}{2}$ and $\sigma = 0.15 \times (\text{max}-\text{min})$, truncating symmetrically at $\pm 3.33\sigma$.
 - **Bandwidth & Packet Loss Drift:** As disclosed in the supervisor review ledger, minor parameter drift exists between early proposal sketches and the committed YAML configurations (e.g. Urban 8.5 Mbps vs 5.0 Mbps; packet loss 1% vs 2%). These configurations reflect the concrete profiles committed in `config/experiments/` from repository inception.
@@ -131,7 +131,7 @@ While final accuracy at round 10 remains close across algorithms, examining traj
 
 ## Exploratory CIFAR-10 Benchmarks (Single Seed)
 
-To evaluate whether task complexity alters algorithmic behavior under severe dropouts, exploratory runs were conducted on CIFAR-10 (10 clients, 10 communication rounds, seed 42):
+To evaluate whether task complexity alters algorithmic behavior under severe dropouts, exploratory runs were conducted on CIFAR-10 (10 clients, 15 communication rounds, seed 42):
 
 | Experiment Profile | Algorithm | Final Test Accuracy | Effective Drop Rate | Delivered Data (MiB) |
 |:---|:---:|:---:|:---:|:---:|

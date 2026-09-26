@@ -1,7 +1,7 @@
 # ==============================================================================
 # FL Network Simulator — n=10 Cohort Full Reproduction Script (Google Colab GPU)
 # ==============================================================================
-# This script automates end-to-end reproduction of the 76-experiment n=10 cohort
+# This script automates end-to-end reproduction of the 100-run n=10 cohort
 # (IID and non-IID conditions) and runs the rigorous statistical analysis.
 #
 # Features:
