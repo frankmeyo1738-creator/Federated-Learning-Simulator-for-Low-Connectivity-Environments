@@ -115,11 +115,11 @@ Significance was assessed via paired two-sided Wilcoxon signed-rank tests using 
 
 ## Convergence Trajectory & Threshold Analysis
 
-While final accuracy at round 10 remains close across algorithms, examining trajectory dynamics reveals the operational costs of low-connectivity environments:
+While final accuracy at round 20 remains close across algorithms, examining trajectory dynamics reveals the operational costs of low-connectivity environments:
 
 1. **Threshold Dynamics ($R_{90}$ and $R_{95}$):**
    * Baseline models reach $90\%$ test accuracy in **1.0 round** and $95\%$ accuracy in **4.0 rounds**.
-   * Under IID Rural network conditions, convergence to $95\%$ requires **4.4 rounds**.
+   * Under IID Rural Zambia conditions, convergence to $95\%$ requires **4.0 rounds** (FedAvg) and **4.1 rounds** (FedProx) — effectively identical to Baseline (4.0 rounds), confirming IID-partitioned MNIST is robust to rural-level dropout.
    * Under Non-IID Dirichlet partitioning ($\alpha=0.5$), Rural Zambia requires **7.3 rounds** ($+83\%$ delay), and Severe Disruption requires **10.1 to 10.3 rounds** ($+153\%$ delay).
    * **Takeaway:** In real-world cellular deployments, data heterogeneity combined with frequent client dropouts dramatically extends the number of communication rounds needed to achieve acceptable operational accuracy.
 
@@ -146,14 +146,14 @@ To evaluate whether task complexity alters algorithmic behavior under severe dro
 
 ## Reproducibility Pipeline
 
-The complete $n=10$ cohort and statistical report can be fully reproduced locally or on Google Colab:
+The complete 100-experiment cohort ($n=10$ paired seeds per configuration) and statistical report can be fully reproduced locally or on Google Colab:
 
 ```bash
 # 1. Local execution of full statistical analysis (reproduces Table 1, 2, and 3):
 python scripts/statistical_analysis.py
 
-# 2. Local test suite execution (24 unit tests):
-pytest tests/unit/ -v
+# 2. Local test suite execution (37 tests: 25 unit + 12 integration):
+pytest -v
 
 # 3. Google Colab GPU reproduction script:
 # Run scripts/colab_runner.py in Google Colab with T4 GPU runtime
