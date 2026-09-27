@@ -28,11 +28,16 @@ import getpass
 # 1. Configuration & Execution Mode
 # ------------------------------------------------------------------------------
 # Choose mode:
-#   "missing_20" : Specifically regenerate the 20 runs (seeds 1-5 of rural & severe IID) that predate 7e7b8cf
-#   "all"        : Full 100 runs (resume-safe: skips already completed runs)
+#   "all"        : Full 100 runs (resume-safe: skips already completed CSVs — ~5s on a fresh clone
+#                  since all 100 CSVs are committed; re-runs any missing ones using T4 GPU)
 #   "stats_only" : Skip simulation runs, immediately run statistical analysis on existing CSVs (~5s)
-#   "force_all"  : Delete existing CSVs and rerun all 100 experiments from scratch + analysis
-MODE = "missing_20"
+#   "force_all"  : Delete existing CSVs and rerun all 100 experiments from scratch + analysis (~4-6h GPU)
+#   "missing_20" : [HISTORICAL] Regenerated 20 pre-seeding-fix runs (seeds 1-5 rural & severe IID)
+#                  that predated commit 7e7b8cf. Do not use for fresh reproduction.
+#
+# For clean-checkout reproduction (Mofya review / Appendix C): use "all"
+# For full GPU re-execution from scratch:                       use "force_all"
+MODE = "all"
 
 MOUNT_GOOGLE_DRIVE = True
 ENABLE_GITHUB_PUSH = True  # Set to True to push new CSVs directly to GitHub
