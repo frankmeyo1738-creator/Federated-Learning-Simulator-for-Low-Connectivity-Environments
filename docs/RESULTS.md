@@ -120,7 +120,7 @@ While final accuracy at round 20 remains close across algorithms, examining traj
 1. **Threshold Dynamics ($R_{90}$ and $R_{95}$):**
    * Baseline models reach $90\%$ test accuracy in **1.0 round** and $95\%$ accuracy in **4.0 rounds**.
    * Under IID Rural Zambia conditions, convergence to $95\%$ requires **4.0 rounds** (FedAvg) and **4.1 rounds** (FedProx) — effectively identical to Baseline (4.0 rounds), confirming IID-partitioned MNIST is robust to rural-level dropout.
-   * Under Non-IID Dirichlet partitioning ($\alpha=0.5$), Rural Zambia requires **7.3 rounds** ($+83\%$ delay), and Severe Disruption requires **10.1 to 10.3 rounds** ($+153\%$ delay).
+   * Under Non-IID Dirichlet partitioning ($\alpha=0.5$), Rural Zambia requires **7.3 rounds** ($+83\%$ delay relative to IID Baseline), and Severe Disruption requires **10.1 to 10.3 rounds** ($+153\%$ delay relative to IID Baseline).
    * **Takeaway:** In real-world cellular deployments, data heterogeneity combined with frequent client dropouts dramatically extends the number of communication rounds needed to achieve acceptable operational accuracy.
 
 2. **Terminal Stability vs Client Drift:**

@@ -33,7 +33,7 @@ This document provides a transparent, accountable record of AI tool usage throug
   * `experiments/results/multiseed/pre-seeding-fix-archive/`: Identified that seeds 1–5 for `baseline_fedavg` and `urban_zambia_fedavg` predated the fix. Archived old CSVs and prepared clean rerun manifest.
   * [`src/core/__init__.py`](file:///src/core/__init__.py) & [`src/algorithms/__init__.py`](file:///src/algorithms/__init__.py) (Commit `42e71e2`): Replaced eager module imports with lazy attribute lookups (`__getattr__`) to completely eliminate the import cycle without relying on test-runner workarounds in `conftest.py`.
 * **My Personal Verification:**
-  * I ran the full test suite locally (`pytest tests/unit/ -v`) confirming all 24 unit tests pass cleanly.
+  * I ran the unit test suite locally (`pytest tests/unit/ -v`) confirming all 25 unit tests pass cleanly. (Note: 12 integration tests were added in commit `bef0b79`, bringing the full suite to 37 tests.)
   * I verified that running identical seeds produces deterministic, byte-for-byte identical client drops and weight trajectories.
 
 ### Period C: $n=10$ Cohort Scaling & Colab GPU Pipeline (Mid-September 2026)

@@ -46,7 +46,7 @@ No existing open-source simulator answers these questions with SSA-inspired, emp
 3. **An Honest Finding** — Under MNIST IID partitioning, both FedAvg and FedProx demonstrate surprising
    resilience to network impairment (terminal accuracy degrades by only $0.18\text{ pp}$ from baseline to
    severe disruption, despite 60% client dropout). Under non-IID partitioning, impairment causes substantial
-   convergence delay ($+83\%$ to $+153\%$ additional communication rounds to reach $95\%$ accuracy).
+   convergence delay ($+83\%$ to $+153\%$ additional communication rounds to reach $95\%$ accuracy, relative to the unimpaired IID Baseline).
    The performance difference between FedAvg and FedProx is operationally negligible across all profiles
    ($-0.04\text{ pp}$ to $+0.01\text{ pp}$): three of four paired comparisons show no statistically
    significant difference ($p \ge 0.2377$), while the Severe Disruption IID comparison reaches
