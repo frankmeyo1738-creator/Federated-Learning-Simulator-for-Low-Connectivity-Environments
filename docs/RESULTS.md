@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document summarises the empirical results produced by the Federated Learning Network Simulator across 100 multi-seed experiments (full $n=10$ cohort for both IID and non-IID data distributions), as well as exploratory CIFAR-10 single-seed benchmarks across four Sub-Saharan Africa (SSA) network profiles.
+This document summarises the empirical results produced by the Federated Learning Network Simulator across 100 multi-seed experiments ($n=10$ paired seeds per configuration, covering both IID and non-IID data distributions), as well as exploratory CIFAR-10 single-seed benchmarks across four Sub-Saharan Africa (SSA) network profiles.
 
 All multi-seed results reported here reflect the post-seeding remediation (commit `7e7b8cf` and later), sample standard deviations computed with Bessel's correction ($\text{ddof}=1$), asymptotic Wilcoxon signed-rank tests with tied-rank splitting (`zero_method='zsplit'`, `mode='approx'`; four exploratory paired comparisons, no multiplicity adjustment applied), paired Cohen's $d_z$ effect sizes with 95% bootstrap confidence intervals, statistical power calculations via the non-central $t$-distribution, genuine binary mebibyte data accounting ($1024^2$ bytes per MiB), and discriminating convergence threshold rounds ($R_{90}$ and $R_{95}$).
 

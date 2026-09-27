@@ -3,7 +3,7 @@
 
 **Project:** CSC 4004 Final Year Project — UNZA CS 2026  
 **Supervisor:** Mr. Mofya Phiri  
-**Author:** Frank Meyoyo Chisanga (2022067479)  
+**Author:** Frank Meyo (2022067479)  
 **Version:** 1.0 — Week 1 Setup  
 **Last Updated:** April 2026
 
