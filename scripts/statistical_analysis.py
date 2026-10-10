@@ -105,7 +105,13 @@ def paired_power(d, n, alpha=0.05):
     nc = abs(d) * np.sqrt(n)
     t_crit = stats.t.ppf(1 - alpha / 2, df)
     power = (1 - stats.nct.cdf(t_crit, df, nc)) + stats.nct.cdf(-t_crit, df, nc)
-    return float(power)
+    power = float(power)
+    # Guard: newer SciPy versions can return NaN for extreme nc values
+    if np.isnan(power):
+        # Fallback: use normal approximation (z-test) for large nc
+        z_crit = stats.norm.ppf(1 - alpha / 2)
+        power = float(stats.norm.cdf(nc - z_crit) + stats.norm.cdf(-nc - z_crit))
+    return power
 
 
 def minimum_detectable_effect(n, alpha=0.05, target_power=0.80):

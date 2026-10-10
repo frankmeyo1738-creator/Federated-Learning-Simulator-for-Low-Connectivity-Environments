@@ -201,7 +201,7 @@ elif MODE in ["all", "force_all"]:
 # ------------------------------------------------------------------------------
 # 7. Simulation Execution Loop
 # ------------------------------------------------------------------------------
-if MODE in ["missing_20", "missing_24", "all", "force_all"]:
+if MODE in ["missing_20", "missing_24", "all", "force_all", "noniid_baseline"]:
     if MODE in ["missing_20", "missing_24"]:
         print(f"⚡ {MODE.upper()} selected: clearing pre-fix CSVs to ensure fresh, clean post-fix generation...")
         for _, csv_path, _, _ in runs:
