@@ -56,8 +56,12 @@ class TestBandwidthUnitConversion:
         )
 
     def test_bandwidth_throttling_delay_mathematical_precision(self):
-        """NetworkImpairmentEngine._apply_bandwidth_throttle converts bytes to megabits
-        via (bytes * 8) / (1024 * 1024) and computes delay_seconds = megabits / bandwidth_mbps.
+        """NetworkImpairmentEngine._apply_bandwidth_throttle converts bytes to decimal megabits
+        via (bytes * 8) / 1,000,000 and computes delay_seconds = megabits / bandwidth_mbps.
+
+        Example: 512 KiB (524,288 B) over 2.0 Mbps:
+        524,288 * 8 = 4,194,304 bits.
+        4,194,304 / 2,000,000 = 2.097152 seconds = 2097.152 milliseconds.
         """
         # Test with 2.0 Mbps bandwidth
         profile = NetworkProfile(
@@ -72,8 +76,8 @@ class TestBandwidthUnitConversion:
         engine = NetworkImpairmentEngine(profile)
 
         # Payload of exactly 512 KiB = 524,288 bytes
-        # 524,288 bytes * 8 = 4,194,304 bits = 4.0 Megabits (binary)
-        # At 2.0 Mbps, delay = 4.0 / 2.0 = 2.0 seconds = 2000.0 milliseconds
+        # 524,288 bytes * 8 = 4,194,304 bits
+        # At 2.0 Mbps (2,000,000 bps): delay = 4,194,304 / 2,000,000 s = 2.097152 s = 2097.152 ms
         num_bytes = 512 * 1024
         update = ModelUpdate(
             client_id=0,
@@ -87,8 +91,8 @@ class TestBandwidthUnitConversion:
 
         delay_ms = engine._apply_bandwidth_throttle(update)
 
-        assert delay_ms == pytest.approx(2000.0, rel=1e-5), (
-            f"Expected 2000.0 ms delay for 512 KiB over 2.0 Mbps, got {delay_ms} ms"
+        assert delay_ms == pytest.approx(2097.152, rel=1e-5), (
+            f"Expected 2097.152 ms delay for 512 KiB over 2.0 Mbps, got {delay_ms} ms"
         )
 
     def test_zero_bandwidth_profile_yields_zero_throttling_delay(self):
@@ -115,3 +119,41 @@ class TestBandwidthUnitConversion:
         )
 
         assert engine._apply_bandwidth_throttle(update) == 0.0
+
+    @pytest.mark.asyncio
+    async def test_bandwidth_delay_is_analytical_and_not_slept(self):
+        """Bandwidth delay is analytical only: recorded in total delay metrics, but not
+        slept via asyncio.sleep, does not schedule arrivals or drop updates due to timeouts.
+        """
+        import time
+        profile = NetworkProfile(
+            name="analytical_bw_test",
+            latency_min_ms=1.0,
+            latency_max_ms=1.0,
+            bandwidth_mbps=0.1,  # 100 kbps (would take ~41.9 seconds if slept!)
+            packet_loss_rate=0.0,
+            dropout_probability=0.0,
+            dropout_duration_rounds=0,
+        )
+        engine = NetworkImpairmentEngine(profile)
+
+        update = ModelUpdate(
+            client_id=0,
+            weights={"w": torch.zeros(1)},
+            num_samples=10,
+            loss=0.1,
+            round_num=1,
+            training_time_seconds=0.1,
+            model_size_bytes=524288,  # 512 KiB -> 41.943 seconds analytical delay
+        )
+
+        t0 = time.perf_counter()
+        result = await engine.transmit(update, client_id=0, round_num=1)
+        elapsed = time.perf_counter() - t0
+
+        # Must not sleep for the 41.9s bandwidth delay; execution must be fast (< 0.2s)
+        assert elapsed < 0.2, f"Execution took {elapsed}s; bandwidth delay was erroneously slept!"
+        assert result is not None, "Update must not be dropped by bandwidth constraint"
+        # Total recorded delay includes analytical bandwidth delay (~41,943 ms) + propagation (1.0 ms)
+        assert engine.get_avg_total_delay() > 41000.0
+        assert engine.get_avg_propagation_latency() == pytest.approx(1.0, rel=1e-3)

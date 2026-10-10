@@ -39,8 +39,7 @@ Comparison: Rural Zambia (IID) (FedAvg vs FedProx)
   - Wilcoxon W-stat:  W = 17.5 (zero_method='zsplit', two-sided, mode='approx')
   - Asymptotic p:     p = 0.3074
   - Paired Cohen's d: d_z = -0.38 [95% CI: -1.61, 0.19]
-  - Statistical Power: 19.1% (at observed effect size |d|=0.38)
-  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%, paired t-approx)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 
 Comparison: Severe Disruption (IID) (FedAvg vs FedProx)
@@ -51,9 +50,8 @@ Comparison: Severe Disruption (IID) (FedAvg vs FedProx)
   - Wilcoxon W-stat:  W = 1.5 (zero_method='zsplit', two-sided, mode='approx')
   - Asymptotic p:     p = 0.0078
   - Paired Cohen's d: d_z = -0.78 [95% CI: -1.34, -0.55]
-  - Statistical Power: 59.9% (at observed effect size |d|=0.78)
-  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
-  -> Significance:    STATISTICALLY SIGNIFICANT difference (p < 0.05)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%, paired t-approx)
+  -> Significance:    STATISTICALLY SIGNIFICANT difference (p = 0.0078 < 0.05; survives Bonferroni p_adj = 0.0312)
 
 [B] Non-IID Network Scenarios:
 
@@ -65,8 +63,7 @@ Comparison: Rural Zambia (Non-IID) (FedAvg vs FedProx)
   - Wilcoxon W-stat:  W = 16.0 (zero_method='zsplit', two-sided, mode='approx')
   - Asymptotic p:     p = 0.2377
   - Paired Cohen's d: d_z = -0.34 [95% CI: -3.64, 0.22]
-  - Statistical Power: 16.1% (at observed effect size |d|=0.34)
-  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%, paired t-approx)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 
 Comparison: Severe Disruption (Non-IID) (FedAvg vs FedProx)
@@ -77,7 +74,6 @@ Comparison: Severe Disruption (Non-IID) (FedAvg vs FedProx)
   - Wilcoxon W-stat:  W = 27.0 (zero_method='zsplit', two-sided, mode='approx')
   - Asymptotic p:     p = 0.9593
   - Paired Cohen's d: d_z = 0.11 [95% CI: -0.75, 0.70]
-  - Statistical Power: 6.2% (at observed effect size |d|=0.11)
-  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%)
+  - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%, paired t-approx)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 

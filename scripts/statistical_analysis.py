@@ -111,17 +111,21 @@ def paired_power(d, n, alpha=0.05):
 def minimum_detectable_effect(n, alpha=0.05, target_power=0.80):
     """
     Compute the Minimum Detectable Effect size (|d|) at target_power=0.80 and alpha=0.05.
+    Uses non-central t-distribution (scipy.stats.nct) as a parametric approximation for
+    the paired Wilcoxon signed-rank test.
     """
     if n < 2:
-        return None
+        raise ValueError(f"Sample size n={n} must be at least 2 to compute MDE.")
     from scipy.optimize import brentq
     def objective(d_val):
         return paired_power(d_val, n, alpha) - target_power
     try:
         mde = brentq(objective, 0.01, 5.0)
         return float(mde)
-    except Exception:
-        return None
+    except Exception as e:
+        raise RuntimeError(
+            f"MDE root-finding bracket failed on [0.01, 5.0] for n={n}, alpha={alpha}, target_power={target_power}: {e}"
+        )
 
 
 def analyze_experiment(exp_name, results_dir, n_seeds=N_SEEDS):
@@ -207,7 +211,6 @@ def run_comparison(output, results, exp1, exp2, label, n_seeds=N_SEEDS):
                                   mode='approx')
             d = cohen_d_paired(acc2, acc1)  # positive d => FedProx > FedAvg
             ci_lower, ci_upper = cohen_d_paired_ci(acc2, acc1)
-            power = paired_power(d, n_pairs)
             mde = minimum_detectable_effect(n_pairs)
 
             mean1 = np.mean(acc1) * 100
@@ -224,12 +227,12 @@ def run_comparison(output, results, exp1, exp2, label, n_seeds=N_SEEDS):
                 output.append(f"  - Paired Cohen's d: d_z = {d:.2f} [95% CI: {ci_lower:.2f}, {ci_upper:.2f}]")
             else:
                 output.append(f"  - Paired Cohen's d: d_z = {d:.2f}")
-            output.append(f"  - Statistical Power: {power*100:.1f}% (at observed effect size |d|={abs(d):.2f})")
             if mde is not None:
-                output.append(f"  - Min. Detectable Effect (MDE): d = {mde:.2f} (at alpha=0.05, power=80%)")
+                output.append(f"  - Min. Detectable Effect (MDE): d = {mde:.2f} (at alpha=0.05, power=80%, paired t-approx)")
 
             if p < 0.05:
-                output.append("  -> Significance:    STATISTICALLY SIGNIFICANT difference (p < 0.05)")
+                p_bonferroni = min(1.0, p * 4)  # 4 primary paired tests
+                output.append(f"  -> Significance:    STATISTICALLY SIGNIFICANT difference (p = {p:.4f} < 0.05; survives Bonferroni p_adj = {p_bonferroni:.4f})")
             else:
                 output.append("  -> Significance:    NO statistically significant difference (p >= 0.05)")
         except ValueError as e:

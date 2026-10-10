@@ -29,11 +29,11 @@ This document provides a transparent, accountable record of AI tool usage throug
 ### Period B: Code Review, Seeding Fix & Archive Remediation (Early September 2026)
 * **Tasks Assisted:** Forensic review of multi-seed reproducibility, diagnosis of PRNG re-initialization between seeds, circular import diagnosis between `src.core` and `src.algorithms`.
 * **Affected Files & Commits:**
-  * [`src/main.py`](file:///src/main.py) & [`src/core/server.py`](file:///src/core/server.py) (Commit `7e7b8cf`): Remedied PRNG state propagation so `torch.manual_seed()` and `random.seed()` consistently seed both client partition assignment and model weight initialization.
+  * [`src/main.py`](file:///src/main.py) & [`src/core/server.py`](file:///src/core/server.py) (Commit `7e7b8cf`): Remedied PRNG state propagation. Prior to commit `7e7b8cf`, `torch.manual_seed()` was invoked inside `FLServer.__init__`, which executed after `get_model()` had already drawn initial network weights in `main.py` (leaving initial weights unseeded, while data partitioning in `src/data/loader.py` was already properly seeded with `np.random.default_rng(seed)`). Lifted seeding to the start of `main.py` before `get_model()` so initial weight generation is strictly deterministic.
   * `experiments/results/multiseed/pre-seeding-fix-archive/`: Identified that seeds 1–5 for `baseline_fedavg` and `urban_zambia_fedavg` predated the fix. Archived old CSVs and prepared clean rerun manifest.
   * [`src/core/__init__.py`](file:///src/core/__init__.py) & [`src/algorithms/__init__.py`](file:///src/algorithms/__init__.py) (Commit `42e71e2`): Replaced eager module imports with lazy attribute lookups (`__getattr__`) to completely eliminate the import cycle without relying on test-runner workarounds in `conftest.py`.
 * **My Personal Verification:**
-  * I ran the unit test suite locally (`pytest tests/unit/ -v`) confirming all 25 unit tests pass cleanly. (Note: 12 integration tests were added in commit `bef0b79`, bringing the full suite to 37 tests.)
+  * I ran the test suite locally (`pytest -v`), confirming all 38 tests pass cleanly (25 unit tests across partitioning [8], network [7], config [5], and aggregation [5]; plus 13 integration tests across FedProx [4], bandwidth units [4], dropout persistence [3], and deterministic seeding [2]).
   * I verified that running identical seeds produces deterministic, byte-for-byte identical client drops and weight trajectories.
 
 ### Period C: $n=10$ Cohort Scaling & Colab GPU Pipeline (Mid-September 2026)

@@ -199,6 +199,11 @@ class NetworkImpairmentEngine:
     def _apply_bandwidth_throttle(self, update: ModelUpdate) -> float:
         """Calculate additional delay caused by bandwidth constraints.
 
+        Note: Bandwidth delay is analytical only: the code computes and records
+        it for transmission latency tracking, but it is not slept (unlike propagation
+        latency), does not schedule arrivals or enforce timeouts, and does not affect
+        which updates enter aggregation.
+
         Parameters
         ----------
         update : ModelUpdate
@@ -212,8 +217,8 @@ class NetworkImpairmentEngine:
         if self.profile.bandwidth_mbps <= 0:
             return 0.0
 
-        # Convert model size from bytes → megabits
-        size_megabits = (update.model_size_bytes * 8) / (1024 * 1024)
+        # Convert model size from bytes → megabits (decimal standard: 1 Mbps = 1,000,000 bits/sec)
+        size_megabits = (update.model_size_bytes * 8) / 1_000_000.0
 
         # Time = size / bandwidth  (seconds → milliseconds)
         delay_seconds = size_megabits / self.profile.bandwidth_mbps
