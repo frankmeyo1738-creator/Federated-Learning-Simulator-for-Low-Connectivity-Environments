@@ -36,7 +36,7 @@ import getpass
 #   "noniid_baseline"  : NEW — 10-seed matched non-IID Baseline FedAvg comparator
 #                        (Ideal network + Dirichlet alpha=0.5). Addresses Supervisor
 #                        Point #12: isolates network impairment from data heterogeneity
-#                        in the +83%/+153% convergence delay figures. ~20-30 min on T4.
+#                        in the +82.5%/+152.5% convergence delay figures. ~20-30 min on T4.
 #
 # For clean-checkout reproduction (Mofya review / Appendix C): use "all"
 # For full GPU re-execution from scratch:                       use "force_all"
@@ -161,7 +161,7 @@ elif MODE == "noniid_baseline":
     # 10-seed matched non-IID Baseline FedAvg comparator (Supervisor Point #12)
     # Network: Ideal Baseline (0% dropout, 0% loss) | Data: Dirichlet alpha=0.5
     # Purpose: isolate the network impairment contribution from data heterogeneity
-    # in the +83%/+153% convergence delay figures (Rural/Severe Non-IID vs IID Baseline).
+    # in the +82.5%/+152.5% convergence delay figures (Rural/Severe Non-IID vs IID Baseline).
     for seed in range(1, 11):
         cfg = f"baseline_fedavg_noniid_seed{seed}"
         runs.append((

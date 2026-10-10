@@ -4,7 +4,7 @@
 #
 # Purpose:
 #   Provides a matched non-IID Baseline (ideal network, Dirichlet alpha=0.5 partitioning)
-#   to isolate the network impairment component of the +83% / +153% convergence delay
+#   to isolate the network impairment component of the +82.5% / +152.5% convergence delay
 #   relative to the IID Baseline (Supervisor Feedback Point #12).
 #
 # Design:

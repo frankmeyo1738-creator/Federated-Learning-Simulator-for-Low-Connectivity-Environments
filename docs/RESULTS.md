@@ -15,8 +15,8 @@ All multi-seed results reported here reflect the post-seeding remediation (commi
    * However, when network impairment is compounded with **non-IID Dirichlet heterogeneity ($\alpha=0.5$)**, the true impact manifests as **substantial convergence delay** rather than terminal accuracy failure. Rounds-to-95% accuracy, with IID results as reference baselines:
      * **4.0 rounds** — IID Baseline (zero impairment; IID multi-seed cohort)
      * **4.0 rounds** — IID Rural Zambia FedAvg (4.1 rounds for FedProx; IID multi-seed cohort)
-     * **7.3 rounds** — Non-IID Rural Zambia (Dirichlet $\alpha=0.5$) — **+83% delay** over IID Baseline
-     * **10.1–10.3 rounds** — Non-IID Severe Disruption (Dirichlet $\alpha=0.5$) — **+153% delay** over IID Baseline; final accuracy $97.29\% \pm 0.77\%$
+     * **7.3 rounds** — Non-IID Rural Zambia (Dirichlet $\alpha=0.5$) — **+82.5% delay** over IID Baseline
+     * **10.1–10.3 rounds** — Non-IID Severe Disruption (Dirichlet $\alpha=0.5$) — **+152.5% delay** over IID Baseline; final accuracy $97.29\% \pm 0.77\%$
    * Heterogeneous local data distributions coupled with heavy client dropouts starve the server of diverse class updates, slowing parameter trajectory progression along the optimization landscape.
 
 2. **Does FedProx offer measurable robustness gains over FedAvg under connectivity constraints?**
@@ -120,7 +120,7 @@ While final accuracy at round 20 remains close across algorithms, examining traj
 1. **Threshold Dynamics ($R_{90}$ and $R_{95}$):**
    * Baseline models reach $90\%$ test accuracy in **1.0 round** and $95\%$ accuracy in **4.0 rounds**.
    * Under IID Rural Zambia conditions, convergence to $95\%$ requires **4.0 rounds** (FedAvg) and **4.1 rounds** (FedProx) — effectively identical to Baseline (4.0 rounds), confirming IID-partitioned MNIST is robust to rural-level dropout.
-   * Under Non-IID Dirichlet partitioning ($\alpha=0.5$), Rural Zambia requires **7.3 rounds** ($+83\%$ delay relative to IID Baseline), and Severe Disruption requires **10.1 to 10.3 rounds** ($+153\%$ delay relative to IID Baseline).
+   * Under Non-IID Dirichlet partitioning ($\alpha=0.5$), Rural Zambia requires **7.3 rounds** ($+82.5\%$ delay relative to IID Baseline), and Severe Disruption requires **10.1 to 10.3 rounds** ($+152.5\%$ delay relative to IID Baseline).
    * **Takeaway:** In real-world cellular deployments, data heterogeneity combined with frequent client dropouts dramatically extends the number of communication rounds needed to achieve acceptable operational accuracy.
 
 2. **Terminal Stability vs Client Drift:**
