@@ -152,7 +152,7 @@ The complete 100-experiment cohort ($n=10$ paired seeds per configuration) and s
 # 1. Local execution of full statistical analysis (reproduces Table 1, 2, and 3):
 python scripts/statistical_analysis.py
 
-# 2. Local test suite execution (37 tests: 25 unit + 12 integration):
+# 2. Local test suite execution (38 tests: 24 unit + 14 integration):
 pytest -v
 
 # 3. Google Colab GPU reproduction script:
