@@ -77,3 +77,40 @@ Comparison: Severe Disruption (Non-IID) (FedAvg vs FedProx)
   - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%, paired t-approx)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 
+
+=================================================================================================================================================
+--- 4. NON-IID BASELINE MATCHED COMPARATOR (Point #12 — Network Impairment Isolation) ---
+=================================================================================================================================================
+
+Experiment                           | n   | Final Acc (%)    | Acc Range [Min, Max]   | Drop Rate (%) | Delivered (MiB) | R90/R95
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+baseline_fedavg_noniid               | 10  | 98.20 ± 0.13     | [98.01%, 98.40%]    | 0.00 ± 0.00   | 457.7 MiB       | 2.7 / 6.0
+
+Design: Ideal network (Baseline profile: 0% dropout, 0% packet loss, 1-5 ms latency) + Non-IID Dirichlet alpha=0.5 partitioning.
+Purpose: Matched comparator to isolate network impairment from data heterogeneity in the +83%/+153% convergence delay figures.
+
+=================================================================================================================================================
+--- 5. CONVERGENCE DELAY DECOMPOSITION (Point #12) ---
+=================================================================================================================================================
+
+Previously reported (v1 draft): Rural Non-IID R95=7.3 rounds vs IID Baseline R95=4.0 rounds → +82.5% delay
+                                 Severe Non-IID R95=10.1 rounds vs IID Baseline R95=4.0 rounds → +152.5% delay
+Attribution: JOINT compound effect of data heterogeneity (Dirichlet alpha=0.5) + network impairment.
+
+With matched Baseline Non-IID comparator (n=10 seeds, R95 = 6.0 rounds):
+
+  Component 1 — Data Heterogeneity Alone (Baseline IID → Baseline Non-IID):
+    R95: 4.0 → 6.0 rounds  → +2.0 rounds  (+50%)
+
+  Component 2 — Network Impairment Alone (Baseline Non-IID → Impaired Non-IID):
+    Rural Zambia:        6.0 → 7.3 rounds  → +1.3 rounds  (+22%)
+    Severe Disruption:   6.0 → 10.1 rounds → +4.1 rounds (+68%)
+
+  Total compound delay (reproduces original figures):
+    Rural:   4.0 → 7.3 rounds  = +3.3 rounds (+82%) = data delay (2.0r) + network delay (1.3r)
+    Severe:  4.0 → 10.1 rounds = +6.1 rounds (+152%) = data delay (2.0r) + network delay (4.1r)
+
+Conclusion: Under non-IID data skew alone (ideal network), convergence to R95 required 6.0 rounds — a 2.0-round delay
+attributable to Dirichlet partitioning. Network impairment added a further 1.3 rounds (Rural) and 4.1 rounds (Severe)
+above this non-IID baseline. The +83%/+153% figures reported in the thesis reflect both components jointly, as now disclosed.
+=================================================================================================================================================
