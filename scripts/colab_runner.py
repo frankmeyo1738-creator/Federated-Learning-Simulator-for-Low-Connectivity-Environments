@@ -32,12 +32,16 @@ import getpass
 #                  since all 100 CSVs are committed; re-runs any missing ones using T4 GPU)
 #   "stats_only" : Skip simulation runs, immediately run statistical analysis on existing CSVs (~5s)
 #   "force_all"  : Delete existing CSVs and rerun all 100 experiments from scratch + analysis (~4-6h GPU)
-#   "missing_20" : [HISTORICAL] Regenerated 20 pre-seeding-fix runs (seeds 1-5 rural & severe IID)
-#                  that predated commit 7e7b8cf. Do not use for fresh reproduction.
+#   "missing_20"      : [HISTORICAL] Regenerated 20 pre-seeding-fix runs. Do not use.
+#   "noniid_baseline"  : NEW — 10-seed matched non-IID Baseline FedAvg comparator
+#                        (Ideal network + Dirichlet alpha=0.5). Addresses Supervisor
+#                        Point #12: isolates network impairment from data heterogeneity
+#                        in the +83%/+153% convergence delay figures. ~20-30 min on T4.
 #
 # For clean-checkout reproduction (Mofya review / Appendix C): use "all"
 # For full GPU re-execution from scratch:                       use "force_all"
-MODE = "all"
+# For Point #12 matched comparator only:                       use "noniid_baseline"
+MODE = "noniid_baseline"
 
 MOUNT_GOOGLE_DRIVE = True
 ENABLE_GITHUB_PUSH = True  # Set to True to push new CSVs directly to GitHub
@@ -152,6 +156,22 @@ if MODE in ["missing_20", "missing_24"]:
     expected_count = 20 if MODE == "missing_20" else 24
     print(f"\nManifest defined ({MODE} mode): {len(runs)} runs total.")
     assert len(runs) == expected_count, f"Expected {expected_count} runs, got {len(runs)}"
+
+elif MODE == "noniid_baseline":
+    # 10-seed matched non-IID Baseline FedAvg comparator (Supervisor Point #12)
+    # Network: Ideal Baseline (0% dropout, 0% loss) | Data: Dirichlet alpha=0.5
+    # Purpose: isolate the network impairment contribution from data heterogeneity
+    # in the +83%/+153% convergence delay figures (Rural/Severe Non-IID vs IID Baseline).
+    for seed in range(1, 11):
+        cfg = f"baseline_fedavg_noniid_seed{seed}"
+        runs.append((
+            f"{NONIID_DIR}/{cfg}.yaml",
+            f"{RESULTS_NONIID_DIR}/{cfg}_metrics.csv",
+            False,  # Non-IID: do NOT pass --iid flag
+            cfg,
+        ))
+    print(f"\nManifest defined (noniid_baseline): {len(runs)} runs total.")
+    assert len(runs) == 10, f"Expected 10 runs, got {len(runs)}"
 
 elif MODE in ["all", "force_all"]:
     # Full 100-run manifest across all 10 configurations (seeds 1-10)
