@@ -14,14 +14,14 @@ This document provides a transparent, accountable record of AI tool usage throug
 | Tool | Primary Purpose | Project Phase | Record Status |
 |:---|:---|:---|:---|
 | **Claude (Anthropic) / Antigravity AI Assistant** | Architecture review, debugging assistance, statistical audit, code remediation, refactoring, Colab pipeline generation | August – September 2026 | **Verified** (Auditable from conversation transcripts) |
-| **GitHub Copilot** | Inline code autocompletion during initial implementation | July – August 2026 | **Reconstructed** (Continuous IDE usage; specific dates untracked) |
+| **GitHub Copilot** | Inline code autocompletion during initial implementation | April – June 2026 | **Reconstructed** (Continuous IDE usage; specific dates untracked) |
 | **ChatGPT (OpenAI)** | Initial brainstorm drafting and literature outline structuring | Early Proposal Phase | **Reconstructed** (Interactive query sessions) |
 
 ---
 
 ## 2. Chronological AI Interaction & Remediation Log
 
-### Period A: Proposal & Initial Development (Early August 2026)
+### Period A: Proposal & Initial Development (April – June 2026)
 * **Tasks Assisted:** Reviewing proposal gap analysis, structuring thesis chapter outlines, and formatting preliminary slide deck outlines.
 * **Affected Areas:** Proposal documentation (`docs/`), presentation decks.
 * **My Personal Verification:** I evaluated all suggested structures against Mr. Phiri's specific supervisor guidelines. All proposal decisions regarding Zambian cellular context (GSMA 2023 reports, ZICTA quality of service standards) were independently chosen and verified by me.
