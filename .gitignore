@@ -11,3 +11,6 @@ dist/
 build/
 data/
 !src/data/
+
+# Thesis and local audit deliverables are separate from the source release.
+/output/

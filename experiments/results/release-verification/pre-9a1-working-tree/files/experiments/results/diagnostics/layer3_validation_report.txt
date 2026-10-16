@@ -1,0 +1,93 @@
+LAYER 3 DIAGNOSTICS: GENUINE OBSERVATIONS AND DROPOUT THEORY (CORRECTIONS 16 AND 4)
+Sampling: 2500 calls/profile; RNG: Python random; sleep stubbed only during sampling.
+Values are the unmodified, already-clamped floats returned by the production method.
+SD means sample standard deviation (ddof=1). Bounds checks are inclusive.
+The production sampler clamps Gaussian tails to the bounds; this is not rejection sampling from a truncated normal.
+
+1. PROPAGATION LATENCY (milliseconds)
+Profile | Seed | N | Mean | SD | Minimum | Maximum | Midpoint | Mean-midpoint | Violations
+baseline | 100 | 2500 | 2.979889 | 0.600208 | 1.125081 | 5.000000 | 3.000000 | -0.020111 | 0
+  Network configuration: {"bandwidth_mbps": 100.0, "dropout_duration_rounds": 0, "dropout_probability": 0.0, "latency_max_ms": 5.0, "latency_min_ms": 1.0, "name": "baseline", "packet_loss_rate": 0.0}
+urban_zambia | 101 | 2500 | 140.285986 | 18.130461 | 80.000000 | 200.000000 | 140.000000 | +0.285986 | 0
+  Network configuration: {"bandwidth_mbps": 8.5, "dropout_duration_rounds": 1, "dropout_probability": 0.05, "latency_max_ms": 200.0, "latency_min_ms": 80.0, "name": "urban_zambia", "packet_loss_rate": 0.01}
+rural_zambia | 102 | 2500 | 549.977460 | 75.820811 | 304.937155 | 781.909926 | 550.000000 | -0.022540 | 0
+  Network configuration: {"bandwidth_mbps": 1.2, "dropout_duration_rounds": 2, "dropout_probability": 0.15, "latency_max_ms": 800.0, "latency_min_ms": 300.0, "name": "rural_zambia", "packet_loss_rate": 0.07}
+severe_disruption | 103 | 2500 | 1401.944613 | 179.009523 | 871.183905 | 2000.000000 | 1400.000000 | +1.944613 | 0
+  Network configuration: {"bandwidth_mbps": 0.3, "dropout_duration_rounds": 3, "dropout_probability": 0.35, "latency_max_ms": 2000.0, "latency_min_ms": 800.0, "name": "severe_disruption", "packet_loss_rate": 0.2}
+Observed bounds violations: 0 in 10000 draws.
+This checks observed bounds; it does not establish empirical network calibration or distributional normality.
+
+2. EMPIRICAL COHORT DROPS (existing observations only)
+Completeness: 110 files, 11 configurations, seeds 1-10, 20 ordered rounds/file; update counts checked against each YAML.
+Experiment | Seeds | Mean drop (%) | Sample SD (pp) | Dropped / attempted updates
+baseline_fedavg | 10 | 0.000000 | 0.000000 | 0 / 1000
+baseline_fedavg_noniid | 10 | 0.000000 | 0.000000 | 0 / 1000
+rural_zambia_fedavg | 10 | 30.200000 | 7.099296 | 302 / 1000
+rural_zambia_fedavg_noniid | 10 | 30.200000 | 7.099296 | 302 / 1000
+rural_zambia_fedprox | 10 | 30.200000 | 7.099296 | 302 / 1000
+rural_zambia_fedprox_noniid | 10 | 30.200000 | 7.099296 | 302 / 1000
+severe_disruption_fedavg | 10 | 59.800000 | 5.432413 | 598 / 1000
+severe_disruption_fedavg_noniid | 10 | 59.800000 | 5.432413 | 598 / 1000
+severe_disruption_fedprox | 10 | 59.800000 | 5.432413 | 598 / 1000
+severe_disruption_fedprox_noniid | 10 | 59.800000 | 5.432413 | 598 / 1000
+urban_zambia_fedavg | 10 | 5.600000 | 3.025815 | 56 / 1000
+These drops combine persistent client dropout and packet loss; the CSVs do not separate their causes.
+Strata share network seeds and may repeat outcomes; do not pool them as independent replications.
+Partition labels come from filenames/directories, not a reconstructed training execution record.
+
+2B. SELECTION-AWARE FINITE-HORIZON THEORY (canonical FedAvg IID, ten seeds)
+Profile | Predicted mean (%) | Observed mean (%) | Difference (pp) | 95% prediction interval for ten-seed mean (%) | Inside?
+Assumptions: independent ideal random draws; uniform fixed-size subsets each round; all clients initially eligible.
+D is fixed by YAML. A trigger drops the current attempt and blocks max(D-1,0) future global rounds.
+r_t = 1 - A_t*(1-p)*(1-loss); A_t = 1 - q*p*sum(A_(t-j), j=1..min(D-1,t-1)), with lag zero for D=0.
+Means use exact rational arithmetic. Full-population finite-state enumeration includes within-round selection dependence.
+Probability distributions use float64 arithmetic, not Monte Carlo, and are checked against the rational means.
+baseline | 0.000000 | 0.000000 | +0.000000 | [0.0, 0.0] | True
+  N=10, m=5, T=20, q=0.5; p=0.0, D=0, packet loss=0.0; predicted run SD=0.000000 pp, observed sample SD=0.000000 pp.
+  Selection-aware steady mean=0.000000%; old q=1 steady mean=0.000000%.
+  Exploratory Bonferroni band for four profile means: [0.0, 0.0]%; inside=True.
+urban_zambia | 5.950000 | 5.600000 | -0.350000 | [4.5, 7.5] | True
+  N=10, m=5, T=20, q=0.5; p=0.05, D=1, packet loss=0.01; predicted run SD=2.365581 pp, observed sample SD=3.025815 pp.
+  Selection-aware steady mean=5.950000%; old q=1 steady mean=5.950000%.
+  Exploratory Bonferroni band for four profile means: [4.2, 7.9]%; inside=True.
+rural_zambia | 26.208599 | 30.200000 | +3.991401 | [23.1, 29.4] | False
+  N=10, m=5, T=20, q=0.5; p=0.15, D=2, packet loss=0.07; predicted run SD=5.144056 pp, observed sample SD=7.099296 pp.
+  Selection-aware steady mean=26.465116%; old q=1 steady mean=31.260870%.
+  Exploratory Bonferroni band for four profile means: [22.2, 30.3]%; inside=True.
+severe_disruption | 60.732510 | 59.800000 | -0.932510 | [57.2, 64.3] | True
+  N=10, m=5, T=20, q=0.5; p=0.35, D=3, packet loss=0.2; predicted run SD=5.719292 pp, observed sample SD=5.432413 pp.
+  Selection-aware steady mean=61.481481%; old q=1 steady mean=69.411765%.
+  Exploratory Bonferroni band for four profile means: [56.2, 65.2]%; inside=True.
+Intervals are model-based predictions for ten independent seed runs, NOT confidence intervals for estimated parameters.
+Pointwise intervals have at least 95% discrete coverage. Each Bonferroni band targets 98.75%, giving at least 95% joint coverage across four means under the model.
+The wider exploratory bands do not erase a pointwise discrepancy. No blanket empirical-theory agreement is claimed.
+A deterministic PRNG is idealized as independent draws. No per-client event logs exist here to identify the cause of discrepancies.
+
+3. SUPERSEDED EVIDENCE AND REPORT SECTION 5.6
+Old adjusted-data means below are read from the archived CSV, not targets for new measurements.
+Profile | Superseded adjusted-data mean | Genuine engine mean | Difference (ms)
+baseline | 3.000000 | 2.979889 | -0.020111
+urban_zambia | 140.200232 | 140.285986 | +0.085754
+rural_zambia | 550.799708 | 549.977460 | -0.822247
+severe_disruption | 1399.402527 | 1401.944613 | +2.542086
+Replace section 5.6's old latency observations, SDs and ranges with new engine observations and seeds.
+These are fresh diagnostic observations, not recovered propagation samples from historical ML runs.
+The old formula is the q=1 steady-state special case; q=0.5 and T=20 require the selection-aware calculation above.
+Separate the selection effect from the initial-state transient. Do not attribute the old Severe discrepancy solely to startup.
+
+4. DESCRIPTIVE ROUND DURATIONS (canonical FedAvg IID strata only)
+Profile | Rounds | Mean duration (s) | Sample SD (s) | Mean difference from Baseline (s)
+baseline | 200 | 21.405102 | 1.283907 | +0.000000
+urban_zambia | 200 | 20.883905 | 0.743282 | -0.521197
+rural_zambia | 200 | 22.411721 | 6.528609 | +1.006619
+severe_disruption | 200 | 23.363195 | 5.721034 | +1.958094
+These durations do not isolate impairment overhead or establish a hardware/thermal cause.
+Rounds within runs are correlated. No timing significance or compute-noise-floor claim is made.
+Bandwidth conversion is not revalidated here; avg_latency_ms remains an untouched historical total-delay metric.
+
+5. PROVENANCE
+Runtime: {"executable": "/Users/frankmeyo/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3", "machine": "arm64", "packages": {"PyYAML": "6.0.3", "numpy": "2.0.2", "torch": "2.8.0"}, "platform": "macOS-27.0.1-arm64-arm-64bit", "python": "3.12.14"}
+Source revision: b7164d65b71d0c625fc167e431d419be514ed2d4 (working-tree hashes recorded separately).
+Raw observations: engine_propagation_latency_draws.csv; per-run audit: cohort_dropout_audit.csv; full provenance: layer3_provenance.json.
+Theory laws: dropout_theory_distribution.csv; per-round expectations: dropout_theory_by_round.csv; derivation: DROPOUT_THEORY.md.
+No ML training or end-to-end FL experiment was executed.

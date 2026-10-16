@@ -1,2 +1,14 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Immutable evidence: preserve exact SHA-256 bytes through staging and checkout.
+experiments/results/diagnostics/cohort_dropout_audit.csv -text
+experiments/results/diagnostics/dropout_theory_by_round.csv -text
+experiments/results/diagnostics/dropout_theory_distribution.csv -text
+experiments/results/diagnostics/engine_propagation_latency_draws.csv -text
+experiments/results/diagnostics/historical-delay-audit/cohort_delay_summary.csv -text
+experiments/results/diagnostics/historical-delay-audit/per_round_derived_delays.csv -text
+experiments/results/diagnostics/historical-delay-audit/per_run_delay_audit.csv -text
+experiments/results/diagnostics/superseded-evidence/pre-correction-16-v1.0.8/propagation_latency_draws.csv -text
+# Frozen pre-repair provenance, source snapshots and original CRLF copies.
+experiments/results/release-verification/pre-9a1-working-tree/** -text
