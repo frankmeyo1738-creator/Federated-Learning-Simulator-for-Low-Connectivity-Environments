@@ -1,36 +1,36 @@
 =================================================================================================================================================
 FL NETWORK SIMULATOR — MULTI-SEED STATISTICAL SUMMARY (n=10 COHORT)
-SciPy Version: 1.13.1 (Pinned) | NumPy Version: 2.0.2 | Cohort Size: n=10
-Methodology: Sample SD (ddof=1), Wilcoxon Signed-Rank (zero_method='zsplit', two-sided, mode='approx'), paired Cohen's d (dz)
+Actual runtime: Python 3.9.6 | SciPy 1.13.1 | NumPy 2.0.2 | pandas 2.3.3
+Cohort: 110 runs, 11 configurations, seeds 1-10, 20 rounds each
+Input manifest SHA256 (sorted filename + NUL + file SHA256 + newline): f23ff5e1455a1774a3300154ebff82d70541de8f05b03f677453119cbf3aa375
+Inputs: experiments/results/multiseed/ (IID); its noniid/ subdirectory (non-IID). Archives excluded.
+Methodology: Sample SD (ddof=1), Wilcoxon Signed-Rank (zero_method='zsplit', two-sided, mode='approx', correction=False), paired Cohen's d (dz)
+Effect direction: FedProx minus FedAvg. Percentile bootstrap: 2,000 paired resamples, RandomState seed=42; undefined resample d_z makes CI unavailable.
+R90/R95: mean first-hit round across ALL seeds, only reported if all reach the threshold; not a sustained-convergence criterion.
 MiB Conversion: bytes / 1048576 (1024², genuine binary mebibyte)
 =================================================================================================================================================
-
 --- 1. IID COHORT (Full n=10 Seeds, Post-Seeding Fix) ---
-
-Experiment                           | n   | Final Acc (%)    | Acc Range [Min, Max]   | Final Loss      | Drop Rate (%)   | Delivered (MiB)    | R90/R95   
+Experiment                           | n   | Final Acc (%)    | Acc Range [Min, Max]   | Final Loss      | Drop Rate (%)   | Delivered (MiB)    | R90/R95
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
-baseline_fedavg                      | 10  | 98.52 ± 0.05     | [98.45%, 98.58%]       | 0.0446 ± 0.0024 | 0.00 ± 0.00     | 457.7 ± 0.0 MiB    | 1.0 / 4.0 
-urban_zambia_fedavg                  | 10  | 98.52 ± 0.08     | [98.33%, 98.63%]       | 0.0443 ± 0.0031 | 5.60 ± 3.03     | 432.1 ± 13.8 MiB   | 1.0 / 3.9 
-rural_zambia_fedavg                  | 10  | 98.48 ± 0.09     | [98.32%, 98.64%]       | 0.0458 ± 0.0028 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 1.1 / 4.0 
-severe_disruption_fedavg             | 10  | 98.34 ± 0.05     | [98.26%, 98.44%]       | 0.0503 ± 0.0022 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 1.1 / 4.7 
-rural_zambia_fedprox                 | 10  | 98.46 ± 0.08     | [98.36%, 98.61%]       | 0.0462 ± 0.0026 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 1.1 / 4.1 
-severe_disruption_fedprox            | 10  | 98.31 ± 0.06     | [98.19%, 98.37%]       | 0.0510 ± 0.0023 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 1.2 / 4.7 
+baseline_fedavg                      | 10  | 98.52 ± 0.05     | [98.45%, 98.58%]       | 0.0446 ± 0.0024 | 0.00 ± 0.00     | 457.7 ± 0.0 MiB    | 1.0 / 4.0
+urban_zambia_fedavg                  | 10  | 98.52 ± 0.08     | [98.33%, 98.63%]       | 0.0443 ± 0.0031 | 5.60 ± 3.03     | 432.1 ± 13.8 MiB   | 1.0 / 3.9
+rural_zambia_fedavg                  | 10  | 98.48 ± 0.09     | [98.32%, 98.64%]       | 0.0458 ± 0.0028 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 1.1 / 4.0
+severe_disruption_fedavg             | 10  | 98.34 ± 0.05     | [98.26%, 98.44%]       | 0.0503 ± 0.0022 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 1.1 / 4.7
+rural_zambia_fedprox                 | 10  | 98.46 ± 0.08     | [98.36%, 98.61%]       | 0.0462 ± 0.0026 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 1.1 / 4.1
+severe_disruption_fedprox            | 10  | 98.31 ± 0.06     | [98.19%, 98.37%]       | 0.0510 ± 0.0023 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 1.2 / 4.7
 
 --- 2. NON-IID COHORT (Full n=10 Seeds, Dirichlet Partitioning) ---
-
-Experiment                           | n   | Final Acc (%)    | Acc Range [Min, Max]   | Final Loss      | Drop Rate (%)   | Delivered (MiB)    | R90/R95   
+Experiment                           | n   | Final Acc (%)    | Acc Range [Min, Max]   | Final Loss      | Drop Rate (%)   | Delivered (MiB)    | R90/R95
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
-rural_zambia_fedavg_noniid           | 10  | 97.74 ± 0.93     | [95.15%, 98.38%]       | 0.0698 ± 0.0297 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 2.5 / 7.3 
-rural_zambia_fedprox_noniid          | 10  | 97.72 ± 0.93     | [95.12%, 98.34%]       | 0.0699 ± 0.0286 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 2.6 / 7.3 
+rural_zambia_fedavg_noniid           | 10  | 97.74 ± 0.93     | [95.15%, 98.38%]       | 0.0698 ± 0.0297 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 2.5 / 7.3
+rural_zambia_fedprox_noniid          | 10  | 97.72 ± 0.93     | [95.12%, 98.34%]       | 0.0699 ± 0.0286 | 30.20 ± 7.10    | 319.5 ± 32.5 MiB   | 2.6 / 7.3
 severe_disruption_fedavg_noniid      | 10  | 97.29 ± 0.77     | [95.69%, 98.43%]       | 0.0836 ± 0.0236 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 3.7 / 10.1
 severe_disruption_fedprox_noniid     | 10  | 97.30 ± 0.78     | [95.70%, 98.38%]       | 0.0836 ± 0.0242 | 59.80 ± 5.43    | 184.0 ± 24.9 MiB   | 3.6 / 10.3
 
 =================================================================================================================================================
 --- 3. PAIRED STATISTICAL SIGNIFICANCE TESTS (FedAvg vs FedProx) ---
 =================================================================================================================================================
-
 [A] IID Network Scenarios:
-
 Comparison: Rural Zambia (IID) (FedAvg vs FedProx)
   - Paired Cohort:    n = 10 paired seeds
   - FedAvg Mean Acc:  98.48% (SD=0.09 pp)
@@ -40,6 +40,7 @@ Comparison: Rural Zambia (IID) (FedAvg vs FedProx)
   - Asymptotic p:     p = 0.3074
   - Paired Cohen's d: d_z = -0.38 [95% CI: -1.61, 0.19]
   - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%, paired t-approx)
+  - Bonferroni:       p_adj = 1.0000 (four comparisons)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 
 Comparison: Severe Disruption (IID) (FedAvg vs FedProx)
@@ -51,10 +52,10 @@ Comparison: Severe Disruption (IID) (FedAvg vs FedProx)
   - Asymptotic p:     p = 0.0078
   - Paired Cohen's d: d_z = -0.78 [95% CI: -1.34, -0.55]
   - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%, paired t-approx)
-  -> Significance:    STATISTICALLY SIGNIFICANT difference (p = 0.0078 < 0.05; survives Bonferroni p_adj = 0.0312)
+  - Bonferroni:       p_adj = 0.0312 (four comparisons)
+  -> Significance:    SIGNIFICANT after Bonferroni adjustment
 
 [B] Non-IID Network Scenarios:
-
 Comparison: Rural Zambia (Non-IID) (FedAvg vs FedProx)
   - Paired Cohort:    n = 10 paired seeds
   - FedAvg Mean Acc:  97.74% (SD=0.93 pp)
@@ -64,6 +65,7 @@ Comparison: Rural Zambia (Non-IID) (FedAvg vs FedProx)
   - Asymptotic p:     p = 0.2377
   - Paired Cohen's d: d_z = -0.34 [95% CI: -3.64, 0.22]
   - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%, paired t-approx)
+  - Bonferroni:       p_adj = 0.9510 (four comparisons)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 
 Comparison: Severe Disruption (Non-IID) (FedAvg vs FedProx)
@@ -75,42 +77,21 @@ Comparison: Severe Disruption (Non-IID) (FedAvg vs FedProx)
   - Asymptotic p:     p = 0.9593
   - Paired Cohen's d: d_z = 0.11 [95% CI: -0.75, 0.70]
   - Min. Detectable Effect (MDE): d = 1.00 (at alpha=0.05, power=80%, paired t-approx)
+  - Bonferroni:       p_adj = 1.0000 (four comparisons)
   -> Significance:    NO statistically significant difference (p >= 0.05)
 
-
-=================================================================================================================================================
---- 4. NON-IID BASELINE MATCHED COMPARATOR (Point #12 — Network Impairment Isolation) ---
-=================================================================================================================================================
-
-Experiment                           | n   | Final Acc (%)    | Acc Range [Min, Max]   | Drop Rate (%) | Delivered (MiB) | R90/R95
+--- 4. NON-IID BASELINE MATCHED COMPARATOR ---
+Experiment                           | n   | Final Acc (%)    | Acc Range [Min, Max]   | Final Loss      | Drop Rate (%)   | Delivered (MiB)    | R90/R95
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
-baseline_fedavg_noniid               | 10  | 98.20 ± 0.13     | [98.01%, 98.40%]    | 0.00 ± 0.00   | 457.7 MiB       | 2.7 / 6.0
+baseline_fedavg_noniid               | 10  | 98.20 ± 0.13     | [98.01%, 98.40%]       | 0.0557 ± 0.0050 | 0.00 ± 0.00     | 457.7 ± 0.0 MiB    | 2.7 / 6.0
 
-Design: Ideal network (Baseline profile: 0% dropout, 0% packet loss, 1-5 ms latency) + Non-IID Dirichlet alpha=0.5 partitioning.
-Purpose: Matched comparator to isolate network impairment from data heterogeneity in the +82.5%/+152.5% convergence delay figures.
+--- 5. CONVERGENCE DELAY DECOMPOSITION (FedAvg, R95) ---
+Baseline IID R95 = 4.0 rounds; Baseline non-IID R95 = 6.0 rounds.
+Heterogeneity contrast (non-IID Baseline minus IID Baseline): +2.0 rounds (+50.00% of IID Baseline).
+Rural Zambia: R95 = 7.3; additional impairment contrast = +1.3 rounds (+21.67% of non-IID Baseline); total compound contrast = +3.3 rounds (+82.50% of IID Baseline).
+Severe Disruption: R95 = 10.1; additional impairment contrast = +4.1 rounds (+68.33% of non-IID Baseline); total compound contrast = +6.1 rounds (+152.50% of IID Baseline).
+All contrasts use unrounded cohort means. Percentages use different denominators and must not be added.
+These are descriptive mean-round contrasts; no confidence interval or significance test for the delay decomposition is claimed.
 
-=================================================================================================================================================
---- 5. CONVERGENCE DELAY DECOMPOSITION (Point #12) ---
-=================================================================================================================================================
-
-Previously reported (v1 draft): Rural Non-IID R95=7.3 rounds vs IID Baseline R95=4.0 rounds → +82.5% delay
-                                 Severe Non-IID R95=10.1 rounds vs IID Baseline R95=4.0 rounds → +152.5% delay
-Attribution: JOINT compound effect of data heterogeneity (Dirichlet alpha=0.5) + network impairment.
-
-With matched Baseline Non-IID comparator (n=10 seeds, R95 = 6.0 rounds):
-
-  Component 1 — Data Heterogeneity Alone (Baseline IID → Baseline Non-IID):
-    R95: 4.0 → 6.0 rounds  → +2.0 rounds  (+50%)
-
-  Component 2 — Network Impairment Alone (Baseline Non-IID → Impaired Non-IID):
-    Rural Zambia:        6.0 → 7.3 rounds  → +1.3 rounds  (+22%)
-    Severe Disruption:   6.0 → 10.1 rounds → +4.1 rounds (+68%)
-
-  Total compound delay (reproduces original figures):
-    Rural:   4.0 → 7.3 rounds  = +3.3 rounds (+82%) = data delay (2.0r) + network delay (1.3r)
-    Severe:  4.0 → 10.1 rounds = +6.1 rounds (+152%) = data delay (2.0r) + network delay (4.1r)
-
-Conclusion: Under non-IID data skew alone (ideal network), convergence to R95 required 6.0 rounds — a 2.0-round delay
-attributable to Dirichlet partitioning. Network impairment added a further 1.3 rounds (Rural) and 4.1 rounds (Severe)
-above this non-IID baseline. The +82.5%/+152.5% figures reported in the thesis reflect both components jointly, as now disclosed.
-=================================================================================================================================================
+Scope: CSVs establish seed labels and recorded outcomes, not training provenance or cross-device bit identity.
+Delay here means communication ROUNDS. avg_latency_ms is not analysed or corrected; historical bandwidth-divisor differences remain in the original CSVs.
