@@ -7,6 +7,8 @@
 **Version:** 1.0 — Week 1 Setup  
 **Last Updated:** April 2026
 
+**Implementation qualification, 16 October 2026:** this is the retained early design specification, not an executable description of the released implementation. In particular, its Layer 3 sketch sleeps bandwidth delay and uses different packet-loss/bounds logic; those sketches are superseded by `src/network/impairment.py`. Current bandwidth delay is analytical only, propagation is clamped and slept, and the recorded total-delay mean is cumulative over successful uploads. Consult [current results](RESULTS.md) and [reproduction guide](REPRODUCIBILITY.md) for verified behaviour, counts and evidence limits. Model/layout examples below remain historical design material.
+
 ---
 
 ## Overview
@@ -474,8 +476,8 @@ network_profile: "config/profiles/urban_zambia.yaml"
 | Data Analysis | pandas | >= 2.0.0 |
 | Visualisation | matplotlib + seaborn | >= 3.7.0 |
 | Testing | pytest + pytest-asyncio | >= 7.3.0 |
-| GPU Backend (M2 Air) | MPS (Metal Performance Shaders) | via PyTorch |
-| Free GPU (training) | Google Colab | T4 / A100 |
+| Implemented device selection | CUDA when available; otherwise CPU | MPS is not selected by production code |
+| Reported hosted training platform | Google Colab / T4 | Complete per-run hardware provenance not retained; no A100 execution claim established |
 
 ---
 

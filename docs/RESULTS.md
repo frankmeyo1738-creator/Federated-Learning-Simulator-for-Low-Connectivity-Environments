@@ -1,166 +1,112 @@
-# Experimental Results
+# Experimental results and evidence boundaries
 
-## Overview
+Updated 16 October 2026 from preserved CSVs and Tasks 1–5. No ML runs were regenerated. Tasks 1–6 are uncommitted working-tree corrections; the existing v1.0.8 tag predates them.
 
-This document summarises the empirical results produced by the Federated Learning Network Simulator across 100 multi-seed experiments ($n=10$ paired seeds per configuration, covering both IID and non-IID data distributions), as well as exploratory CIFAR-10 single-seed benchmarks across four Sub-Saharan Africa (SSA) network profiles.
+## Cohort and statistical procedure
 
-All multi-seed results reported here reflect the post-seeding remediation (commit `7e7b8cf` and later), sample standard deviations computed with Bessel's correction ($\text{ddof}=1$), asymptotic Wilcoxon signed-rank tests with tied-rank splitting (`zero_method='zsplit'`, `mode='approx'`; four exploratory paired comparisons, no multiplicity adjustment applied), paired Cohen's $d_z$ effect sizes with 95% bootstrap confidence intervals, statistical power calculations via the non-central $t$-distribution, genuine binary mebibyte data accounting ($1024^2$ bytes per MiB), and discriminating convergence threshold rounds ($R_{90}$ and $R_{95}$).
+There are **110 MNIST runs**: 60 IID, 40 impaired non-IID and ten matched non-IID Baseline runs. Eleven configurations each have seeds 1–10 and 20 rounds. Ten clients exist and five are selected per round. Non-IID partitioning is Dirichlet alpha 0.5. The matrix is asymmetric: there is no Baseline/Urban FedProx or Urban non-IID cohort.
 
----
+The [generated statistical summary](../experiments/results/statistical_summary.txt) uses sample SD (ddof=1), paired two-sided asymptotic Wilcoxon with zero_method='zsplit', mode='approx', correction=False, and paired Cohen's d_z with 95% percentile-bootstrap intervals: **2,000 paired resamples, RandomState seed 42**. Observed-effect power is withdrawn. MDE ≈1.00 at 80% power is a paired-t approximation, not exact Wilcoxon power.
 
-## Research Questions & Findings Summary
+| Configuration | Final accuracy (%), mean ± sample SD | R95 mean first-hit round |
+|---|---:|---:|
+| Baseline FedAvg IID | 98.52 ± 0.05 | 4.0 |
+| Urban FedAvg IID | 98.52 ± 0.08 | 3.9 |
+| Rural FedAvg IID | 98.48 ± 0.09 | 4.0 |
+| Rural FedProx IID | 98.46 ± 0.08 | 4.1 |
+| Severe FedAvg IID | 98.34 ± 0.05 | 4.7 |
+| Severe FedProx IID | 98.31 ± 0.06 | 4.7 |
+| Baseline FedAvg non-IID | 98.20 ± 0.13 | 6.0 |
+| Rural FedAvg non-IID | 97.74 ± 0.93 | 7.3 |
+| Rural FedProx non-IID | 97.72 ± 0.93 | 7.3 |
+| Severe FedAvg non-IID | 97.29 ± 0.77 | 10.1 |
+| Severe FedProx non-IID | 97.30 ± 0.78 | 10.3 |
 
-1. **How does SSA-style network impairment affect federated learning convergence?**
-   * Under **IID partitioning**, final global accuracy exhibits remarkable resilience across 20 communication rounds: baseline accuracy of **$98.52\% \pm 0.05\%$** degrades only slightly to **$98.48\% \pm 0.09\%$** under Rural Zambia conditions ($30.20\%$ drop rate) and **$98.34\% \pm 0.05\%$** under Severe Disruption ($59.80\%$ drop rate) — a degradation of only $0.18\text{ pp}$.
-   * However, when network impairment is compounded with **non-IID Dirichlet heterogeneity ($\alpha=0.5$)**, the true impact manifests as **substantial convergence delay** rather than terminal accuracy failure. Rounds-to-95% accuracy, with IID results as reference baselines:
-     * **4.0 rounds** — IID Baseline (zero impairment; IID multi-seed cohort)
-     * **4.0 rounds** — IID Rural Zambia FedAvg (4.1 rounds for FedProx; IID multi-seed cohort)
-     * **7.3 rounds** — Non-IID Rural Zambia (Dirichlet $\alpha=0.5$) — **+82.5% delay** over IID Baseline
-     * **10.1–10.3 rounds** — Non-IID Severe Disruption (Dirichlet $\alpha=0.5$) — **+152.5% delay** over IID Baseline; final accuracy $97.29\% \pm 0.77\%$
-   * Heterogeneous local data distributions coupled with heavy client dropouts starve the server of diverse class updates, slowing parameter trajectory progression along the optimization landscape.
+R95 is a first-hit criterion, not sustained convergence. Threshold means are withheld if any seed fails to reach the threshold.
 
-2. **Does FedProx offer measurable robustness gains over FedAvg under connectivity constraints?**
-   * Under most network conditions, FedProx shows **no statistically significant difference** in final test accuracy compared to FedAvg. However, under Severe Disruption (IID), a statistically significant difference emerged, though its practical magnitude is negligible:
-     * Rural Zambia (IID): Mean difference $-0.02\text{ pp}$ ($98.46\% \text{ vs } 98.48\%$; raw diff $-0.013\text{ pp}$), Wilcoxon $W = 17.5, p = 0.3074, d_z = -0.38$
-     * Severe Disruption (IID): Mean difference $-0.04\text{ pp}$ ($98.31\% \text{ vs } 98.34\%$; raw diff $-0.038\text{ pp}$), Wilcoxon $W = 1.5, p = 0.0078, d_z = -0.78$ (**Statistically Significant**)
-     * Rural Zambia (Non-IID): Mean difference $-0.02\text{ pp}$ ($97.72\% \text{ vs } 97.74\%$), Wilcoxon $W = 16.0, p = 0.2377, d_z = -0.34$
-     * Severe Disruption (Non-IID): Mean difference $+0.01\text{ pp}$ ($97.30\% \text{ vs } 97.29\%$), Wilcoxon $W = 27.0, p = 0.9593, d_z = 0.11$
-   * The significant result under Severe Disruption (IID) illustrates the critical distinction between statistical and practical significance. While the consistency of the difference across seeds ($p=0.0078$) makes it statistically significant, the actual performance gap is merely $0.04\text{ pp}$ ($98.34\%$ vs $98.31\%$), which is practically negligible for real-world deployments. A clean, fully IID cohort tightened the standard deviations sufficiently to allow this consistent but tiny margin to cross the significance threshold. Overall, the proximal regularisation term ($\mu=0.01$) does not provide a large, transformative accuracy improvement over FedAvg on this benchmark under these conditions.
+| Paired comparison | FedProx − FedAvg (pp), unrounded mean | W | Asymptotic p | Bonferroni p_adj | d_z [95% bootstrap CI] |
+|---|---:|---:|---:|---:|---|
+| Rural IID | -0.013 | 17.5 | 0.3074 | 1.0000 | -0.38 [-1.61, 0.19] |
+| Severe IID | -0.038 | 1.5 | 0.0078 | 0.0312 | -0.78 [-1.34, -0.55] |
+| Rural non-IID | -0.021 | 16.0 | 0.2377 | 0.9510 | -0.34 [-3.64, 0.22] |
+| Severe non-IID | +0.008 | 27.0 | 0.9593 | 1.0000 | 0.11 [-0.75, 0.70] |
 
-3. **How does network degradation affect communication cost?**
-   * Total payload successfully delivered to the server scales downwards with client dropout rates:
-     * Baseline: **$457.7 \pm 0.0\text{ MiB}$** ($0.00\%$ drop rate)
-     * Urban Zambia: **$432.1 \pm 13.8\text{ MiB}$** ($5.60\%$ drop rate)
-     * Rural Zambia: **$319.5 \pm 32.5\text{ MiB}$** ($30.20\%$ drop rate)
-     * Severe Disruption: **$184.0 \pm 24.9\text{ MiB}$** ($59.80\%$ drop rate)
-   * *Critical Methodological Framing:* This reduction reflects **delivered payload volume**, not an operational bandwidth saving. In reality, dropped packets and aborted TCP/HTTP uploads still consume cellular radio energy, channel time, and subscriber data quotas without contributing to model convergence.
+Severe IID survives Bonferroni adjustment over four comparisons. No material FedProx advantage was observed at mu = 0.01; this is not an equivalence test or proof about other datasets/hyperparameters. Differences are calculated before rounding cohort means.
 
-4. **Do findings generalise across datasets of varying complexity?**
-   * Exploratory single-seed CIFAR-10 experiments demonstrate that higher task complexity amplifies degradation: severe disruption reduces final accuracy from $65.8\%$ (baseline) to $51.2\%$, with FedProx demonstrating a preliminary $+0.88\text{ pp}$ advantage under severe loss. These CIFAR-10 results remain exploratory pending multi-seed cohort execution.
+## Matched convergence contrasts
 
----
+FedAvg IID Baseline R95 = 4.0; non-IID Baseline = 6.0. Their descriptive contrast is **+2.0 rounds (+50%)**. Relative to matched non-IID Baseline:
 
-## Experiment Setup
+- Rural non-IID: 7.3 rounds, **+1.3 (+21.67%)**.
+- Severe non-IID: 10.1 rounds, **+4.1 (+68.33%)**.
 
-### Evaluated Network Profiles
+Total contrasts against IID Baseline are +3.3 rounds (+82.50%) and +6.1 (+152.50%). They combine partition and network changes. Percentages with different denominators must not be added. No confidence interval or significance test for this decomposition is claimed.
 
-Four network profiles model realistic mobile communication regimes in Sub-Saharan Africa:
+Current code seeds before model initialisation; the earlier bug left initial weights unseeded, while partitioning already used a seeded NumPy generator. CSVs support seed labels and recorded outcomes, not historical device manifests or cross-device bit identity.
 
-| Profile Name | Round-Trip Latency Range | Downlink Bandwidth | Packet Loss Rate | Dropout Trigger Rate | Real-World Analog |
-|:---|:---:|:---:|:---:|:---:|:---|
-| **Baseline** | 1–5 ms | 100.0 Mbps | 0% | 0% | High-speed campus LAN / Datacenter |
-| **Urban Zambia** | 80–200 ms | 8.5 Mbps | 1% | 5% | 4G/LTE commercial core (e.g. Lusaka) |
-| **Rural Zambia** | 300–800 ms | 1.2 Mbps | 7% | 15% | 3G/EDGE rural cellular with fading |
-| **Severe Disruption** | 800–2000 ms | 0.3 Mbps | 20% | 35% | 2G / backhaul congestion / load-shedding |
+## Genuine Layer 3 evidence
 
-### Profile Assumptions & Disclosures
+Sources: [diagnostic report](../experiments/results/diagnostics/layer3_validation_report.txt), [method explanation](../experiments/results/diagnostics/README.md), [provenance](../experiments/results/diagnostics/layer3_provenance.json).
 
-- **Implementation vs Proposal:** Nominal proposal parameters were formulated as unbounded Gaussians, whereas `src/network/impairment.py` enforces explicit bounded intervals $[\text{min}, \text{max}]$ with midpoint $\mu = \frac{\text{min}+\text{max}}{2}$ and $\sigma = 0.15 \times (\text{max}-\text{min})$, truncating symmetrically at $\pm 3.33\sigma$.
-- **Bandwidth & Packet Loss Drift:** As disclosed in the supervisor review ledger, minor parameter drift exists between early proposal sketches and the committed YAML configurations. The committed configs are the ground truth used in all experiments: Urban Zambia uses 8.5 Mbps bandwidth and 1% packet loss (the early proposal sketch noted 5.0 Mbps and 2%). All results derive from the committed YAML values in `config/experiments/`.
+| Profile | Seed | Engine calls | Mean propagation (ms) | Sample SD (ms) |
+|---|---:|---:|---:|---:|
+| Baseline | 100 | 2,500 | 2.979889 | 0.600208 |
+| Urban | 101 | 2,500 | 140.285986 | 18.130461 |
+| Rural | 102 | 2,500 | 549.977460 | 75.820811 |
+| Severe | 103 | 2,500 | 1401.944613 | 179.009523 |
 
----
+Only sleep is suppressed during these actual production-method calls. Returned values are unadjusted. All 10,000 observations fall within inclusive bounds. This checks sampled bounds, not field calibration or empirical normality. The Gaussian is clamped, not rejection-sampled.
 
-## Controlled Experimental Conditions
+The October 10 diagnostic generated NumPy values and shifted them toward preset means. Its generator and outputs remain [preserved with hashes](../experiments/results/diagnostics/superseded-evidence/pre-correction-16-v1.0.8/README.md), but cannot support raw-engine claims. The student confirms Google Antigravity assistance from direct recollection; the underlying model is unspecified. Genuine samples above are fresh diagnostics, not recovered historical ML samples.
 
-To guarantee scientific reproducibility across all comparisons:
-1. **Identical PRNG Impairment Sequences:** For any given random seed $s \in \{1, \dots, 10\}$, client availability triggers, packet loss events, and latency draws are completely deterministic. Paired FedAvg and FedProx runs under seed $s$ experience the exact same dropout events round-for-round (empirically confirmed: dropped update counts and delivered MiB are identical byte-for-byte across paired runs).
-2. **Identical Data Partitions:** Training partitions across the 10 clients are generated deterministically per seed. Under non-IID partitioning, a Dirichlet distribution with concentration parameter $\alpha = 0.5$ generates identical class distributions for both algorithms.
-3. **Deterministic Weight Initialisation:** Global initial weights are seeded deterministically before round 1, ensuring both algorithms initiate gradient descent from the identical parameter state.
-4. **Independent Logging Verification:** Every execution independently validates the active partitioning mode directly from the internal logger output (`iid=True` or `iid=False`).
+## Selection-aware dropout validation
 
----
+The [derivation](../experiments/results/diagnostics/DROPOUT_THEORY.md) includes 10 clients, selection of 5 without replacement, triggers on selected eligible transmissions, persistent disconnections, packet loss after disconnection checks, initially online clients and 20 rounds. Expected means use rational arithmetic; predictive distributions use numerical event enumeration, not Monte Carlo.
 
-## Multi-Seed Results — Full $n=10$ Cohort
+| Profile | Predicted 20-round drop (%) | Observed mean (%) | Observed sample SD (pp) |
+|---|---:|---:|---:|
+| Baseline | 0.000000 | 0.00 | 0.00 |
+| Urban | 5.950000 | 5.60 | 3.03 |
+| Rural | 26.208599 | 30.20 | 7.10 |
+| Severe | 60.732510 | 59.80 | 5.43 |
 
-Aggregated across 10 random seeds (seeds 1 to 10) per configuration (100 total experiment runs). All metric uncertainties represent sample standard deviations with Bessel's correction ($\text{ddof}=1$).
+Observations are from canonical ten-seed FedAvg IID strata. Matching seeded outcomes across groups are not independent extra replications. Rural's 30.20% is outside the model's pointwise 95% predictive interval [23.1%, 29.4%], although inside the exploratory four-profile Bonferroni band [22.2%, 30.3%]. These are predictive intervals under model assumptions, not confidence intervals for an estimated observed mean. The discrepancy remains; blanket “matches theory” wording is withdrawn.
 
-### Table 1: IID Cohort Summary (60 Experiments, 10 Seeds Each)
+## Historical delay units and delivered payload
 
-| Experiment Configuration | $n$ | Final Accuracy (%) | Accuracy Range [Min, Max] | Final Loss | Effective Drop Rate (%) | Delivered Data (MiB) | Convergence Rounds ($R_{90} / R_{95}$) |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| `baseline_fedavg` | 10 | **98.52 ± 0.05%** | [98.45%, 98.58%] | 0.0446 ± 0.0024 | 0.00 ± 0.00% | 457.7 ± 0.0 MiB | 1.0 / 4.0 |
-| `urban_zambia_fedavg` | 10 | **98.52 ± 0.08%** | [98.33%, 98.63%] | 0.0443 ± 0.0031 | 5.60 ± 3.03% | 432.1 ± 13.8 MiB | 1.0 / 3.9 |
-| `rural_zambia_fedavg` | 10 | **98.48 ± 0.09%** | [98.32%, 98.64%] | 0.0458 ± 0.0028 | 30.20 ± 7.10% | 319.5 ± 32.5 MiB | 1.1 / 4.0 |
-| `severe_disruption_fedavg` | 10 | **98.34 ± 0.05%** | [98.26%, 98.44%] | 0.0503 ± 0.0022 | 59.80 ± 5.43% | 184.0 ± 24.9 MiB | 1.1 / 4.7 |
-| `rural_zambia_fedprox` | 10 | **98.46 ± 0.08%** | [98.36%, 98.61%] | 0.0462 ± 0.0026 | 30.20 ± 7.10% | 319.5 ± 32.5 MiB | 1.1 / 4.1 |
-| `severe_disruption_fedprox` | 10 | **98.31 ± 0.06%** | [98.19%, 98.37%] | 0.0510 ± 0.0023 | 59.80 ± 5.43% | 184.0 ± 24.9 MiB | 1.2 / 4.7 |
+The [historical audit](../experiments/results/diagnostics/historical-delay-audit/AUDIT.md) supports binary-divisor classification for 100 original runs and decimal-Mbps classification for the ten matched non-IID Baseline runs. Git/source evidence and numerical compatibility agree, but are not an attested execution manifest.
 
-### Table 2: Non-IID Cohort Summary (40 Experiments, Dirichlet $\alpha=0.5$, 10 Seeds Each)
+Saved avg_latency_ms is a **cumulative successful-upload mean of propagation plus analytical bandwidth delay**. For cumulative delivered bytes C, successful uploads S, fixed bandwidth w and historical divisor d, derive the decimal mean by adding 8000*C/(w*S) × (1/1000000 − 1/d) to the saved mean. Never scale the whole mixed metric. Variable payloads are handled linearly; current-round means use cumulative weighted differences. Sixty no-success rounds have missing current-round delay means, not zero observations.
 
-| Experiment Configuration | $n$ | Final Accuracy (%) | Accuracy Range [Min, Max] | Final Loss | Effective Drop Rate (%) | Delivered Data (MiB) | Convergence Rounds ($R_{90} / R_{95}$) |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| `rural_zambia_fedavg_noniid` | 10 | **97.74 ± 0.93%** | [95.15%, 98.38%] | 0.0698 ± 0.0297 | 30.20 ± 7.10% | 319.5 ± 32.5 MiB | 2.5 / 7.3 |
-| `rural_zambia_fedprox_noniid` | 10 | **97.72 ± 0.93%** | [95.12%, 98.34%] | 0.0699 ± 0.0286 | 30.20 ± 7.10% | 319.5 ± 32.5 MiB | 2.6 / 7.3 |
-| `severe_disruption_fedavg_noniid` | 10 | **97.29 ± 0.77%** | [95.69%, 98.43%] | 0.0836 ± 0.0236 | 59.80 ± 5.43% | 184.0 ± 24.9 MiB | 3.7 / 10.1 |
-| `severe_disruption_fedprox_noniid` | 10 | **97.30 ± 0.78%** | [95.70%, 98.38%] | 0.0836 ± 0.0242 | 59.80 ± 5.43% | 184.0 ± 24.9 MiB | 3.6 / 10.3 |
+All 2,200 row derivatives are separate from originals, with provenance. Individual historical latency draws and serialized wire payloads are unavailable. Production bandwidth conversion is now decimal; bandwidth delay is analytical, not slept and does not schedule arrivals or enforce deadlines.
 
----
+Delivered parameter payload is unchanged: Baseline 457.7 ± 0.0 MiB, Urban 432.1 ± 13.8, Rural 319.5 ± 32.5, Severe 184.0 ± 24.9 (ten-seed means ± sample SD). Reduced delivered bytes mean lost updates, not bandwidth efficiency. Energy, subscriber quota and protocol overhead are not measured.
 
-## Statistical Significance Testing (Wilcoxon Signed-Rank Tests)
+## Timing, hardware and overhead — read-only Task 5
 
-Significance was assessed via paired two-sided Wilcoxon signed-rank tests using zero-split rank tie-breaking (`zero_method='zsplit'`) and pinned asymptotic approximation (`mode='approx'`). Effect sizes are measured via paired Cohen's $d_z = \frac{\bar{x}_\text{diff}}{s_\text{diff}}$ with $95\%$ bootstrap confidence intervals (1,000 resamples). Statistical power $(1-\beta)$ was calculated at $\alpha = 0.05$ against the observed effect size, alongside the Minimum Detectable Effect (MDE) at $80\%$ power.
+Pooled throughput = 60 × total recorded rounds / sum(round_duration_seconds). Across 110 runs: 2,200 rounds, 50,567.148399 recorded seconds, **2.610390 rounds/minute**; mean round 22.985067 s; mean summed duration/run 459.701349 s; range 391.320742–859.863056 s. No run averages 5 rounds/minute. Original 100-run pooled throughput is 2.590970; matched non-IID Baseline is 2.821903.
 
-### Table 3: Paired Hypothesis Tests (FedAvg vs. FedProx across $n=10$ Seeds)
+The round timer includes selection, local training/transfers, propagation waits, impairment checks, aggregation and evaluation. It excludes initial setup, metric recording after the timer, and final CSV/plot export. The tracker sums these durations as total experiment time; that is not complete process runtime. The Colab wrapper separately times the child process. Sleeps may overlap other work; neither summing propagation delays nor comparing profile means isolates overhead.
 
-| Comparison Scenario | Data Partition | Mean FedAvg Acc (%) | Mean FedProx Acc (%) | Mean Diff (pp) | Wilcoxon $W$ | Asymptotic $p$-value | Cohen's $d_z$ [95% CI] | Statistical Power ($1-\beta$) | Statistically Significant? |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Rural Zambia** | IID | 98.48% | 98.46% | -0.02 pp | 17.5 | **p = 0.3074** | -0.38 [-1.61, 0.19] | 19.1% | **No** ($p \ge 0.05$) |
-| **Severe Disruption** | IID | 98.34% | 98.31% | -0.04 pp | 1.5 | **p = 0.0078** | -0.78 [-1.34, -0.55] | 59.9% | **Yes** ($p < 0.05$) |
-| **Rural Zambia** | Non-IID | 97.74% | 97.72% | -0.02 pp | 16.0 | **p = 0.2377** | -0.34 [-3.64, 0.22] | 16.1% | **No** ($p \ge 0.05$) |
-| **Severe Disruption** | Non-IID | 97.29% | 97.30% | +0.01 pp | 27.0 | **p = 0.9593** | 0.11 [-0.75, 0.70] | 6.2% | **No** ($p \ge 0.05$) |
+**Target status: NOT MET in recorded results.** The proposal's M2/8 GB hardware condition is not verified for each run. Documentation reports local M2 development and Colab T4 execution; October 13 supervisor feedback specifically corroborates T4 non-IID Baseline seed 1. No complete per-run hardware/software map, retained run logs or notebook outputs were found. Current analysis provenance cannot establish historical training hardware.
 
-*Note on Statistical Power:* For a paired sample size of $n=10$ at $\alpha=0.05$, achieving standard $80\%$ statistical power requires an effect size of $|d| \ge 1.00$ (a large effect). While a statistically significant difference was found in Severe Disruption (IID) due to highly consistent pairing, the absolute magnitude of this difference ($0.04\text{ pp}$) is practically negligible. Because the true performance differences on MNIST between FedAvg and FedProx are subtle ($|d_z| \le 0.78$), the tests exhibit low statistical power. This demonstrates conclusively that FedProx does not provide a large, transformative accuracy improvement over FedAvg on this benchmark under these conditions.
+The old 398–860 s / mean 467 s summary is not the current 110-run aggregate. Thermal throttling, CPU-only timing, +0.73 s/round isolated overhead, and “no measurable overhead above a 1.28 s compute noise floor” are unsupported. Baseline round SD 1.283907 s is descriptive variability, not an overhead bound. The +0.73 s withdrawal remains; no new benchmark is claimed.
 
----
+## Exploratory CIFAR-10: current files versus earlier prose
 
-## Convergence Trajectory & Threshold Analysis
+Read-only extraction from four current experiments/results/cifar10/*_metrics.csv files gives 15 rounds/run:
 
-While final accuracy at round 20 remains close across algorithms, examining trajectory dynamics reveals the operational costs of low-connectivity environments:
+| Config | Final accuracy (%) |
+|---|---:|
+| baseline_fedavg_cifar10 | 73.42 |
+| rural_zambia_fedavg_cifar10 | 72.94 |
+| severe_disruption_fedavg_cifar10 | 69.64 |
+| severe_disruption_fedprox_cifar10 | 70.52 |
 
-1. **Threshold Dynamics ($R_{90}$ and $R_{95}$):**
-   * Baseline models reach $90\%$ test accuracy in **1.0 round** and $95\%$ accuracy in **4.0 rounds**.
-   * Under IID Rural Zambia conditions, convergence to $95\%$ requires **4.0 rounds** (FedAvg) and **4.1 rounds** (FedProx) — effectively identical to Baseline (4.0 rounds), confirming IID-partitioned MNIST is robust to rural-level dropout.
-   * Under Non-IID Dirichlet partitioning ($\alpha=0.5$), Rural Zambia requires **7.3 rounds** ($+82.5\%$ delay relative to IID Baseline), and Severe Disruption requires **10.1 to 10.3 rounds** ($+152.5\%$ delay relative to IID Baseline).
-   * **Takeaway:** In real-world cellular deployments, data heterogeneity combined with frequent client dropouts dramatically extends the number of communication rounds needed to achieve acceptable operational accuracy.
+Previous documentation figures 65.80/61.40/51.20/52.08% do not match these final rows and lack a run/version attribution here. They are superseded as current-CSV summaries, not silently treated as validated earlier observations. The Severe difference is +0.88 pp, a single-seed hypothesis for future work, not general superiority. Task 7 reconciled these source files with the thesis, and the Task 8 template report retains the traceable 69.64%/70.52% Severe values while explicitly withdrawing the untraceable 61.57%/62.45% pair. The four current files trace to `d678bef097b9be4b0480b2470c48b85441e23043`, use the seed-42 configurations and predate the model-initialisation seeding fix. No missing historical run or hardware attribution has been invented. No Baseline FedProx output exists in this set.
 
-2. **Terminal Stability vs Client Drift:**
-   * Under Non-IID partitioning, final model loss rises from $0.0446$ (Baseline) to $0.0698$ (Rural Non-IID) and $0.0836$ (Severe Non-IID).
-   * Standard deviation of accuracy increases from $\pm 0.05\text{ pp}$ (IID) to $\pm 0.93\text{ pp}$ (Rural Non-IID), demonstrating higher variance across different seed-partition combinations.
+## Profile and reproduction qualifications
 
----
+Profiles are SSA-inspired assumptions, not demonstrated field calibration. Urban bandwidth/loss 8.5 Mbps/1% differs from proposal 5 Mbps/2%; Rural 1.2 Mbps/7% differs from 1 Mbps/8%. No preserved evidence justifies those differences as empirical calibration. Disconnection state probability is not the same quantity as selected-update drop rate.
 
-## Exploratory CIFAR-10 Benchmarks (Single Seed)
-
-To evaluate whether task complexity alters algorithmic behavior under severe dropouts, exploratory runs were conducted on CIFAR-10 (10 clients, 15 communication rounds, seed 42):
-
-| Experiment Profile | Algorithm | Final Test Accuracy | Effective Drop Rate | Delivered Data (MiB) |
-|:---|:---:|:---:|:---:|:---:|
-| Baseline CIFAR-10 | FedAvg | 65.80% | 0.00% | 457.7 MiB |
-| Rural Zambia CIFAR-10 | FedAvg | 61.40% | 29.00% | 325.0 MiB |
-| Severe Disruption CIFAR-10 | FedAvg | 51.20% | 64.00% | 164.8 MiB |
-| Severe Disruption CIFAR-10 | FedProx ($\mu=0.01$) | 52.08% | 64.00% | 164.8 MiB |
-
-*Observation:* On a non-trivial computer vision task where the baseline accuracy is lower ($65.80\%$), severe communication impairment causes a severe **14.6 pp** performance drop. FedProx achieves **$52.08\%$** vs FedAvg's **$51.20\%$** ($+0.88\text{ pp}$ margin). Because this is a single exploratory seed, this represents an exploratory finding rather than a statistically confirmed conclusion.
-
----
-
-## Reproducibility Pipeline
-
-The complete 100-experiment cohort ($n=10$ paired seeds per configuration) and statistical report can be fully reproduced locally or on Google Colab:
-
-```bash
-# 1. Local execution of full statistical analysis (reproduces Table 1, 2, and 3):
-python scripts/statistical_analysis.py
-
-# 2. Local test suite execution (38 tests: 25 unit + 13 integration):
-pytest -v
-
-# 3. Google Colab GPU reproduction script:
-# Run scripts/colab_runner.py in Google Colab with T4 GPU runtime
-```
-
-All 100 raw CSV result files are version-controlled in `experiments/results/multiseed/`.
-
----
-
-*Frank Meyo — Department of Computer Science, University of Zambia (2026)*
+[Reproduction guide](REPRODUCIBILITY.md): exact runner coverage and complete 110-run commands. [AI disclosure](AI_USAGE_LOG.md): historical attributions and Codex/student responsibilities. Current [test inventory](REPRODUCIBILITY.md#test-inventory--appendix-b-source-material): 148 cases (the original 140 plus eight release guards). Historical Task 6 recorded 102 targeted passes; Task 9A recorded 140 local passes and three publication-checkout failures. Current Task 9A.1 results are separately recorded in [release verification](RELEASE_VERIFICATION.md).

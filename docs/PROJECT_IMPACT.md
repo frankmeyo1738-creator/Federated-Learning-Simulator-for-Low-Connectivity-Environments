@@ -28,7 +28,7 @@ But before deployment, researchers and practitioners need to know:
 - How much bandwidth does FL consume under realistic SSA conditions?
 - At what point does network impairment begin to meaningfully degrade model quality?
 
-No existing open-source simulator answers these questions with SSA-inspired, empirically grounded parameters.
+The project studies these questions with SSA-inspired modelling assumptions. Their field calibration and superiority over other simulators have not been established.
 
 ---
 
@@ -38,23 +38,23 @@ No existing open-source simulator answers these questions with SSA-inspired, emp
    mobile connectivity data for Sub-Saharan Africa, covering urban, rural, and severely
    disrupted connectivity scenarios specific to the region.
 
-2. **Reproducible Comparative Experiments** — 100 multi-seed runs (n=10 paired seeds across 10 configurations) across both IID and
+2. **Reproducible Comparative Experiments** — 110 multi-seed runs (the original 100 plus ten matched non-IID Baseline runs) across both IID and
    non-IID Dirichlet ($\alpha=0.5$) partitions, accompanied by rigorous
    statistical analysis (Wilcoxon signed-rank tests with tied-rank handling, Cohen's $d_z$ effect sizes,
-   and post-hoc statistical power analysis via non-central $t$-distribution approximation) enabling credible algorithm comparison.
+   2,000 paired bootstrap resamples and an MDE paired-t approximation). Observed-effect power reporting was withdrawn.
 
 3. **An Honest Finding** — Under MNIST IID partitioning, both FedAvg and FedProx demonstrate surprising
    resilience to network impairment (terminal accuracy degrades by only $0.18\text{ pp}$ from baseline to
    severe disruption, despite 60% client dropout). Under non-IID partitioning, impairment causes substantial
-   convergence delay ($+82.5\%$ to $+152.5\%$ additional communication rounds to reach $95\%$ accuracy, relative to the unimpaired IID Baseline).
-   The performance difference between FedAvg and FedProx is operationally negligible across all profiles
+   convergence contrasts: IID Baseline R95=4.0, matched non-IID Baseline=6.0, Rural non-IID=7.3 and Severe non-IID=10.1. The +82.5%/+152.5% comparisons against IID Baseline combine partition and network changes; additional impairment contrasts against the matched non-IID Baseline are +1.3/+4.1 rounds. These are descriptive contrasts, not a significance test.
+   The observed performance difference between FedAvg and FedProx is small in the four tested comparisons
    ($-0.04\text{ pp}$ to $+0.01\text{ pp}$): three of four paired comparisons show no statistically
    significant difference ($p \ge 0.2377$), while the Severe Disruption IID comparison reaches
    statistical significance ($p = 0.0078$) at a margin of $0.04\text{ pp}$ — illustrating the classic
    divergence between statistical and practical significance on a simple benchmark task.
 
 4. **Open Infrastructure for Future Research** — The simulator is fully configurable via
-   YAML, supports custom network profiles, includes an automated 37-test validation suite, and can be
+   YAML, supports custom network profiles, contains 148 current test cases (including eight release-evidence guards; historical and current execution results are distinguished in docs/RELEASE_VERIFICATION.md), and can be
    extended to new algorithms, datasets, and aggregation strategies without modifying core code.
 
 ---
@@ -66,7 +66,7 @@ The findings from this simulator have direct implications for:
 - **Rural health data initiatives** — Community health workers in rural Zambia operating
   on 2G/3G connections can participate in federated training without their data leaving
   local devices, but only if the FL system tolerates their dropout rates. This simulator
-  quantifies that tolerance.
+  examines that sensitivity under its model assumptions; it does not validate a real deployment.
 
 - **Agricultural AI** — Smallholder farmer data (crop yields, soil conditions, weather
   patterns) is geographically distributed and privacy-sensitive. FL is a natural fit,
