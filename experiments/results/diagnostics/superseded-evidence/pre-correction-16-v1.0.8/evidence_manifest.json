@@ -1,0 +1,14 @@
+{
+  "scripts/verify_layer3_fidelity.py": {
+    "archive_file": "verify_layer3_fidelity.py.superseded.txt",
+    "sha256": "6757c847376a5aacd190db867a36e1ef7bb6909347f03bd1a52f253d36998d9b"
+  },
+  "experiments/results/diagnostics/layer3_validation_report.txt": {
+    "archive_file": "layer3_validation_report.txt",
+    "sha256": "86ae14b8ccdd6e1f1e2c260ddda4cf4b78b86405e87ad59ea61979fe1cd6b4e3"
+  },
+  "experiments/results/diagnostics/propagation_latency_draws.csv": {
+    "archive_file": "propagation_latency_draws.csv",
+    "sha256": "7b73fbb711265980ed89c0eeef8955ad3d513a4150c9d639a09d9dc354ca4272"
+  }
+}
