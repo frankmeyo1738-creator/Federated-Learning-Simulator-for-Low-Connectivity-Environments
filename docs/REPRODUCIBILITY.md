@@ -1,6 +1,6 @@
 # Reproduction guide and Appendix C source material
 
-Updated 16 October 2026. This describes the corrected working tree; Tasks 1–6 are not committed or tagged. Existing tag `v1.0.8` at `b7164d6` predates those tasks. Checking out that tag alone does not reproduce the corrected diagnostics or documentation.
+Updated 16 October 2026. Tasks 1–6 are included in the annotated local `v1.1.0` release. Task 9B.1 verified independent full clones of its committed HEAD and local tag: 148/148 tests and all four analysis/verification commands passed in each. Documentation-only follow-ups require the same verification from their updated commit and tag. GitHub publication has not occurred and requires separate authorisation. Existing tag `v1.0.8` at `b7164d6` predates those tasks and does not contain the corrected diagnostics or documentation.
 
 ## Evidence review versus experiment regeneration
 

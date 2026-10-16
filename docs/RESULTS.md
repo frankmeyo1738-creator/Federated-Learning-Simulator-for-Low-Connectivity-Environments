@@ -1,6 +1,6 @@
 # Experimental results and evidence boundaries
 
-Updated 16 October 2026 from preserved CSVs and Tasks 1–5. No ML runs were regenerated. Tasks 1–6 are uncommitted working-tree corrections; the existing v1.0.8 tag predates them.
+Updated 16 October 2026 from preserved CSVs and Tasks 1–5. No ML runs were regenerated. Tasks 1–6 are included in the verified local v1.1.0 release; the existing v1.0.8 tag predates them. GitHub publication has not occurred. See [release verification](RELEASE_VERIFICATION.md) for the dated checks and remaining publication gate.
 
 ## Cohort and statistical procedure
 

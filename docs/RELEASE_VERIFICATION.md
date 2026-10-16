@@ -1,6 +1,6 @@
 # Release serialization and verification
 
-Task 9A.1, 16 October 2026. The corrected source is uncommitted and untagged; `v1.1.0` is a proposed version only. No publication is asserted.
+**Local release status, 16 October 2026:** Task 9B.1 created the annotated local `v1.1.0` release and verified independent full clones of committed HEAD and the tag: 148/148 tests and all four analysis/verification commands passed in each. This documentation-only follow-up requires fresh verification of its updated commit and tag; the exact commit/tag identities and execution records are recorded separately. No GitHub publication has occurred; remote publication requires separate authorisation. The dated Task 9A.1 history below remains preserved.
 
 ## Evidence policy
 
@@ -21,7 +21,7 @@ python3 scripts/audit_historical_delays.py
 python3 scripts/verify_release_evidence.py --strict-checkout
 ```
 
-These commands do not train models or download datasets. Required inputs, immutable archives and relevant Git history are included in the proposed source tree. A source ZIP or a shallow history lacking the historical commits cannot substitute for a full clone. No private Mac directories or temporary Codex files are needed. The scripts resolve project paths from their own location.
+These commands do not train models or download datasets. Required inputs, immutable archives and relevant Git history are included in the local release source tree. A source ZIP or a shallow history lacking the historical commits cannot substitute for a full clone. No private Mac directories or temporary Codex files are needed. The scripts resolve project paths from their own location.
 
 The fourth command verifies original experiment membership and bytes against historical Git, all frozen hashes, active source/output hashes and superseded archive bytes. It compares the regenerated scientific results with preserved results. Original observations, counts, identifiers and schemas are exact; per-round and per-run delay derivatives are exact. Cross-version float accumulation may differ within 1e-9 ms in cohort aggregates, 1e-14 in probability-law cells and 1e-10 in JSON float statistics. Every nonzero difference is recorded; no value is adjusted or silently rounded to force agreement. Scientific summary text must match exactly except the actual runtime and input-manifest lines.
 
@@ -31,11 +31,11 @@ The strict option requires committed input serialization. Without it, the verifi
 
 Task 6's record remains unchanged: 102 targeted passes and dependency-limited full collection. Task 9A later found an existing Python 3.9.6 environment with SciPy 1.13.1, NumPy 2.0.2, pandas 2.3.3, Torch 2.8.0, torchvision 0.23.0, matplotlib 3.9.4, pytest 8.4.2 and pytest-asyncio 1.2.0. It obtained 140 local passes but only 137 passes/three failures after Git normalization. Those were real release blockers, not withdrawn test evidence.
 
-Task 9A.1 adds eight guard tests, so the complete suite is 148 (135 unit + 13 integration). The original 140 remain included. Current verification outcomes will be appended after execution; this document does not assume a pass. The available existing environment is used without package changes or new dataset downloads. Full tests may read the existing cached MNIST and train tiny synthetic fixtures; the four analysis commands need neither. Installation of the separately documented Python 3.11+/SciPy 1.16.3 pins has not been newly tested in this task.
+Task 9A.1 added eight guard tests, so the complete suite is 148 (135 unit + 13 integration). The original 140 remain included. At the start of Task 9A.1, verification outcomes were pending; its observed outcomes are recorded below. The available existing environment is used without package changes or new dataset downloads. Full tests may read the existing cached MNIST and train tiny synthetic fixtures; the four analysis commands need neither. Installation of the separately documented Python 3.11+/SciPy 1.16.3 pins was not newly tested in Task 9A.1.
 
 ## Limits and approval gate
 
-CIFAR-10 remains exploratory and historical hardware attribution incomplete. Rural's dropout discrepancy remains. No code or parameter is tuned to improve apparent theoretical agreement. The corrected release must still be checked from its actual committed/tagged tree and then independently from GitHub after explicit publication authorisation. No such commit, tag or push occurs in Task 9A.1.
+CIFAR-10 remains exploratory and historical hardware attribution incomplete. Rural's dropout discrepancy remains. No code or parameter is tuned to improve apparent theoretical agreement. Task 9B.1 completed the actual committed/tagged-tree checks. Any documentation follow-up must repeat those checks; independent GitHub verification remains pending separate publication authorisation. No such commit, tag or push occurs in Task 9A.1.
 
 ## Observed Task 9A.1 verification
 
@@ -47,4 +47,4 @@ All 10,000 genuine latency observations, empirical dropout rows, theoretical pro
 
 The strict check initially detected that exporting over existing files had retained their CRLF working copies. The test setup was corrected by exporting the staged index into an empty directory; all 110 resulting input files were independently checked against their historical Git bytes. A later test launcher stopped at its `download=False` cache check when the temporary cache link had already been removed; the link was restored for full tests and then removed before analysis. No download was attempted. Neither issue was bypassed by weakening a check.
 
-Recommendation: conditional GO for a separately approved commit/release workflow, with the actual committed/tagged tree checked again before pushing and a remote clone checked after publication. `v1.1.0` remains proposed and must be rechecked. This task creates no commit, tag or remote change.
+**Historical Task 9A.1 recommendation:** conditional GO for a separately approved commit/release workflow, with the actual committed/tagged tree checked again before pushing and a remote clone checked after publication. `v1.1.0` remains proposed and must be rechecked. This task creates no commit, tag or remote change.

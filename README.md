@@ -7,7 +7,7 @@
 **Project:** CSC 4004 Final Year Project, 2026  
 **License:** MIT
 
-**Evidence update, 16 October 2026:** the current cohort is **110 runs** (60 IID, 40 impaired non-IID, ten matched non-IID Baseline). Tasks 1–6 are uncommitted corrections based on `b7164d6`; the existing `v1.0.8` tag does not contain them. See [runner coverage and complete 110-run commands](docs/REPRODUCIBILITY.md), [AI disclosures](docs/AI_USAGE_LOG.md), [proposed Appendices A–C](docs/APPENDIX_MATERIAL.md), and [verification record](docs/DOCUMENTATION_VERIFICATION.md).
+**Evidence update, 16 October 2026:** the current cohort is **110 runs** (60 IID, 40 impaired non-IID, ten matched non-IID Baseline). Tasks 1–6 are included in the annotated local `v1.1.0` release, verified in Task 9B.1; the existing `v1.0.8` tag does not contain them. GitHub publication has not occurred and requires separate authorisation. See [runner coverage and complete 110-run commands](docs/REPRODUCIBILITY.md), [AI disclosures](docs/AI_USAGE_LOG.md), [proposed Appendices A–C](docs/APPENDIX_MATERIAL.md), and [verification record](docs/DOCUMENTATION_VERIFICATION.md).
 
 ---
 
@@ -46,7 +46,7 @@ Four SSA-inspired network profiles reflecting typical mobile communication regim
 
 ## Quickstart
 
-Use a separate copy of the corrected working tree and a compatible Python 3.11+ interpreter. The unpublished corrections are not obtained merely by cloning the existing remote release. Installation below requires package access; it was not executed during Task 6.
+Use a separate full clone of the corrected local release and a compatible Python 3.11+ interpreter. The corrections have not been published to GitHub, so cloning the existing remote release does not obtain them. Installation below requires package access; it was not executed during Task 6.
 
 ```bash
 # Install in the prepared copy
@@ -116,7 +116,7 @@ The procedure is asymptotic, two-sided Wilcoxon with `zero_method='zsplit'`, `co
 
 - Current requirements target compatible Python 3.11+ environments; package pins do not prove historical installed versions or hardware.
 - Current inventory: **148 cases, 135 unit + 13 integration**: the previous 140 plus eight release-evidence guard tests. Historical v1.0.2 had 37; v1.0.8 had 38.
-- The historical Task 6 checks recorded 102 analysis/diagnostic passes and dependency-limited collection. Task 9A subsequently passed all original 140 locally but found three clean-checkout failures. Task 9A.1 repairs and verifies serialization and provenance; its current results are recorded separately in [release verification](docs/RELEASE_VERIFICATION.md). Eight partition tests can download MNIST and some integration tests train synthetic models.
+- The historical Task 6 checks recorded 102 analysis/diagnostic passes and dependency-limited collection. Task 9A subsequently passed all original 140 locally but found three clean-checkout failures. Task 9A.1 repaired serialization and provenance; Task 9B.1 then passed all 148 tests and all four analysis/verification commands in independent committed-HEAD and local-tag clones. These dated results are recorded in [release verification](docs/RELEASE_VERIFICATION.md). Eight partition tests can download MNIST and some integration tests train synthetic models.
 - [Test allocations, safe commands and runner limitations](docs/REPRODUCIBILITY.md). No single current Colab mode covers 110: default `noniid_baseline` covers ten; `all`/`force_all` cover the original 100.
 
 ## Corrected diagnostic and timing evidence
@@ -146,7 +146,7 @@ config/experiments/    # Self-contained YAML experiment configurations
 experiments/results/   # Output CSVs, plots, and statistical summary
 scripts/               # Multi-seed runner and statistical analysis scripts
 tests/
-├── unit/              # 127 cases across 8 modules
+├── unit/              # 135 cases across 9 modules
 └── integration/       # 13 cases across 4 modules
 ```
 
@@ -161,4 +161,4 @@ GitHub: https://github.com/frankmeyo1738-creator/Federated-Learning-Simulator-fo
 
 ## Release evidence verification
 
-The proposed corrected version is `v1.1.0`; no tag, commit or publication is asserted. Evidence CSVs have exact path-specific byte-preservation attributes. Original observations are unchanged; a frozen pre-repair record retains earlier working-tree hashes and source versions. From a full checkout, run the three documented analysis scripts followed by `python3 scripts/verify_release_evidence.py --strict-checkout`. See [the policy and verification procedure](docs/RELEASE_VERIFICATION.md). Thesis and audit deliverables under `output/` are excluded from the source release.
+The corrected `v1.1.0` release is committed and annotated locally. Task 9B.1 verified independent committed-HEAD and local-tag clones; this documentation follow-up requires the same checks from its updated commit and tag. No GitHub publication has occurred; remote publication requires separate authorisation. Evidence CSVs have exact path-specific byte-preservation attributes. Original observations are unchanged; a frozen pre-repair record retains earlier working-tree hashes and source versions. From a full checkout, run the three documented analysis scripts followed by `python3 scripts/verify_release_evidence.py --strict-checkout`. See [the policy and verification procedure](docs/RELEASE_VERIFICATION.md). Thesis and audit deliverables under `output/` are excluded from the source release.
